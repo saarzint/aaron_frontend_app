@@ -1,13 +1,17 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { login, logout as logoutService, type LoginCredentials, type User } from './authService';
 import { AuthContext } from './authContext';
 import {
-  getToken,
-  setToken,
+  clearSession,
   getRole as getStoredRole,
+  getToken,
+  isSessionExpired,
+  setExpiresAt,
+  setRefreshToken,
   setRole as storeRole,
-  clearRole,
+  setToken,
 } from './tokenStorage';
+import { SESSION_EXPIRED_EVENT } from '../api/apiClient';
 
 const mockRoleByEmail = (email: string): string => {
   if (email.includes('admin')) return 'super_admin';
@@ -15,18 +19,38 @@ const mockRoleByEmail = (email: string): string => {
   return 'user';
 };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    if (!getToken()) return null;
-    return { id: '', email: 'restored-user', role: getStoredRole() ?? undefined };
-  });
+const initialUser = (): User | null => {
+  if (!getToken() || isSessionExpired()) {
+    if (isSessionExpired()) clearSession();
+    return null;
+  }
+  return { id: '', email: 'restored-user', role: getStoredRole() ?? undefined };
+};
 
-  const [role, setRole] = useState<string | null>(() => (getToken() ? getStoredRole() : null));
+const initialRole = (): string | null => {
+  if (!getToken() || isSessionExpired()) return null;
+  return getStoredRole();
+};
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(initialUser);
+  const [role, setRole] = useState<string | null>(initialRole);
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setUser(null);
+      setRole(null);
+    };
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+  }, []);
 
   const loginUser = async (credentials: LoginCredentials) => {
-    const { token, user: authUser } = await login(credentials);
+    const { token, refreshToken, expiresIn, user: authUser } = await login(credentials);
     const assignedRole = authUser.role ?? mockRoleByEmail(credentials.email);
     setToken(token);
+    setRefreshToken(refreshToken);
+    setExpiresAt(Date.now() + expiresIn * 1000);
     storeRole(assignedRole);
     setUser({ ...authUser, role: assignedRole });
     setRole(assignedRole);
@@ -35,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutUser = () => {
     logoutService();
-    clearRole();
     setUser(null);
     setRole(null);
   };
