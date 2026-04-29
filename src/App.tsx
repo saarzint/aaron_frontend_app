@@ -1,9 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PrivateRoute from '@app/routing/PrivateRoute';
-import LoginPage from '@modules/ecommerce/pages/LoginPage';
-import AdminDashboard from '@modules/ecommerce/pages/AdminDashboard';
-import OrgDashboard from '@modules/ecommerce/pages/OrgDashboard';
-import UserDashboard from '@modules/ecommerce/pages/UserDashboard';
+import LoginPage from '@modules/auth/pages/LoginPage';
+import RoleDashboard from '@modules/platform/pages/RoleDashboard';
 
 function App() {
   return (
@@ -14,7 +12,7 @@ function App() {
           path="/dashboard/admin"
           element={
             <PrivateRoute allowedRoles={['super_admin']}>
-              <AdminDashboard />
+              <RoleDashboard />
             </PrivateRoute>
           }
         />
@@ -22,7 +20,7 @@ function App() {
           path="/dashboard/org"
           element={
             <PrivateRoute allowedRoles={['super_admin', 'org_admin']}>
-              <OrgDashboard />
+              <RoleDashboard />
             </PrivateRoute>
           }
         />
@@ -30,7 +28,7 @@ function App() {
           path="/dashboard/user"
           element={
             <PrivateRoute allowedRoles={['super_admin', 'org_admin', 'user']}>
-              <UserDashboard />
+              <RoleDashboard />
             </PrivateRoute>
           }
         />
