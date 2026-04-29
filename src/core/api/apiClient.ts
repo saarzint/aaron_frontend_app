@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { getToken } from '../auth/tokenStorage';
 
 export interface ApiError {
   message: string;
@@ -14,7 +15,7 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   const tenantId = localStorage.getItem('tenantId') ?? 'default';
 
   if (token) {
