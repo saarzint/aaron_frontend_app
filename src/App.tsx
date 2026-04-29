@@ -13,7 +13,7 @@ function App() {
         <Route
           path="/dashboard/admin"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={['super_admin']}>
               <AdminDashboard />
             </PrivateRoute>
           }
@@ -21,7 +21,7 @@ function App() {
         <Route
           path="/dashboard/org"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={['super_admin', 'org_admin']}>
               <OrgDashboard />
             </PrivateRoute>
           }
@@ -29,7 +29,7 @@ function App() {
         <Route
           path="/dashboard/user"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={['super_admin', 'org_admin', 'user']}>
               <UserDashboard />
             </PrivateRoute>
           }
