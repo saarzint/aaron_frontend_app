@@ -10,7 +10,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 
 export default defineConfig([
-  globalIgnores(['dist', 'node_modules', 'storybook-static']),
+  globalIgnores(['dist', 'node_modules', 'storybook-static', 'public/mockServiceWorker.js']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
