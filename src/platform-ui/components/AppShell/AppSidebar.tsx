@@ -1,4 +1,5 @@
 import { NavLink, Stack, Text } from '@mantine/core';
+import { Link, useLocation } from 'react-router-dom';
 
 export interface SidebarItem {
   label: string;
@@ -12,6 +13,8 @@ interface AppSidebarProps {
 }
 
 export default function AppSidebar({ title, items }: AppSidebarProps) {
+  const location = useLocation();
+
   return (
     <Stack gap="xs" p="md">
       <Text fw={600} size="lg" mb="md">
@@ -22,7 +25,21 @@ export default function AppSidebar({ title, items }: AppSidebarProps) {
           key={item.label}
           label={item.label}
           description={item.description}
-          href={item.to ?? '#'}
+          component={Link}
+          to={item.to ?? '#'}
+          active={Boolean(item.to && location.pathname === item.to)}
+          styles={(theme) => ({
+            root: {
+              '&[data-active]': {
+                backgroundColor: theme.colors.brand[0],
+                color: theme.colors.brand[7],
+                fontWeight: 600,
+              },
+              '&[data-active]:hover': {
+                backgroundColor: theme.colors.brand[1],
+              },
+            },
+          })}
         />
       ))}
     </Stack>

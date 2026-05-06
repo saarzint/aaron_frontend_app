@@ -1,5 +1,7 @@
-import { Center, Loader, Table, Text } from '@mantine/core';
+import { Table } from '@mantine/core';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
+import EmptyState from '@platform-ui/feedback/EmptyState';
+import LoadingState from '@platform-ui/feedback/LoadingState';
 
 interface DataTableProps<T> {
   columns: ColumnDef<T, unknown>[];
@@ -21,21 +23,11 @@ export default function DataTable<T>({
   });
 
   if (isLoading) {
-    return (
-      <Center py="xl">
-        <Loader />
-      </Center>
-    );
+    return <LoadingState title="Loading records" description="Please wait while data is fetched." />;
   }
 
   if (!data || data.length === 0) {
-    return (
-      <Center py="xl">
-        <Text c="dimmed" size="sm">
-          {emptyMessage}
-        </Text>
-      </Center>
-    );
+    return <EmptyState title="Nothing to show" description={emptyMessage} />;
   }
 
   return (

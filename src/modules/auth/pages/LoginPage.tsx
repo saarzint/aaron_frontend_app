@@ -1,8 +1,11 @@
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, PasswordInput, Stack, TextInput } from '@mantine/core';
+import { Alert, PasswordInput, Stack } from '@mantine/core';
 import { useAuth } from '@core/auth/useAuth';
 import AuthLayout from '@platform-ui/layouts/AuthLayout';
+import Button from '@platform-ui/primitives/Button';
+import FormField from '@platform-ui/primitives/FormField';
+import Input from '@platform-ui/primitives/Input';
 
 interface LoginForm {
   email: string;
@@ -46,13 +49,9 @@ export default function LoginPage() {
             control={control}
             rules={{ required: 'Email is required' }}
             render={({ field }) => (
-              <TextInput
-                {...field}
-                label="Email"
-                type="email"
-                autoComplete="email"
-                error={errors.email?.message}
-              />
+              <FormField label="Email" error={errors.email?.message} required>
+                <Input {...field} type="email" autoComplete="email" />
+              </FormField>
             )}
           />
           <Controller
@@ -60,12 +59,9 @@ export default function LoginPage() {
             control={control}
             rules={{ required: 'Password is required' }}
             render={({ field }) => (
-              <PasswordInput
-                {...field}
-                label="Password"
-                autoComplete="current-password"
-                error={errors.password?.message}
-              />
+              <FormField label="Password" error={errors.password?.message} required>
+                <PasswordInput {...field} autoComplete="current-password" />
+              </FormField>
             )}
           />
           {errors.root && (

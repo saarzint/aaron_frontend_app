@@ -1,5 +1,7 @@
-import { Center, Container, Paper, Stack, Title, Text } from '@mantine/core';
+import { Center, Container, Stack } from '@mantine/core';
 import type { ReactNode } from 'react';
+import Card from '@platform-ui/primitives/Card';
+import Typography from '@platform-ui/primitives/Typography';
 
 interface AuthLayoutProps {
   title: string;
@@ -9,21 +11,17 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
-    <Center mih="100vh" bg="gray.0">
+    <Center mih="100vh" bg="neutral.0">
       <Container size={420} w="100%">
-        <Paper p="xl" radius="md" withBorder shadow="sm">
+        <Card p="xl">
           <Stack gap="lg">
             <Stack gap={4}>
-              <Title order={2}>{title}</Title>
-              {subtitle && (
-                <Text size="sm" c="dimmed">
-                  {subtitle}
-                </Text>
-              )}
+              <Typography variant="heading">{title}</Typography>
+              {subtitle && <Typography variant="caption">{subtitle}</Typography>}
             </Stack>
             {children}
           </Stack>
-        </Paper>
+        </Card>
       </Container>
     </Center>
   );
