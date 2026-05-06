@@ -26,9 +26,5 @@ export default function Typography({ variant = 'body', children, className }: Pr
     );
   }
 
-  return (
-    <Text className={className}>
-      {children}
-    </Text>
-  );
+  return <Text className={className}>{children}</Text>;
 }

@@ -25,7 +25,11 @@ export default function FormField({
       {label && (
         <Text size="sm" fw={600} component="label">
           {label}
-          {required ? <Text component="span" c="danger">*</Text> : null}
+          {required ? (
+            <Text component="span" c="danger">
+              *
+            </Text>
+          ) : null}
         </Text>
       )}
       {children}

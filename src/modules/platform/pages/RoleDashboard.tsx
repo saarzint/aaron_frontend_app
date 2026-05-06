@@ -62,7 +62,11 @@ export default function RoleDashboard() {
           />
         )}
         <Card p="md">
-          <DataTable columns={orderColumns} data={ordersQuery.data} isLoading={ordersQuery.isLoading} />
+          <DataTable
+            columns={orderColumns}
+            data={ordersQuery.data}
+            isLoading={ordersQuery.isLoading}
+          />
         </Card>
       </Stack>
     </AppShell>

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import Button from '@platform-ui/primitives/Button';
 import Avatar from '@platform-ui/primitives/Avatar';
 import Select from '@platform-ui/primitives/Select';
-import { useTenant } from '@platform-ui/theme/TenantThemeProvider';
+import { useTenant } from '@platform-ui/theme/useTenant';
 import { TENANTS } from '@platform-ui/theme/tenants';
 
 interface AppTopbarProps {
@@ -23,9 +23,13 @@ export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarP
   return (
     <Group justify="space-between" h="100%" px="md">
       <Group gap="sm">
-        <Avatar size="sm" color="brand">{(tenant ?? TENANTS.default).name.slice(0, 1)}</Avatar>
+        <Avatar size="sm" color="brand">
+          {(tenant ?? TENANTS.default).name.slice(0, 1)}
+        </Avatar>
         <div>
-          <Text size="sm" fw={600}>{userLabel ?? 'Signed in'}</Text>
+          <Text size="sm" fw={600}>
+            {userLabel ?? 'Signed in'}
+          </Text>
           {roleLabel && (
             <Text size="xs" c="neutral.6">
               {roleLabel}

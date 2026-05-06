@@ -23,7 +23,9 @@ export default function DataTable<T>({
   });
 
   if (isLoading) {
-    return <LoadingState title="Loading records" description="Please wait while data is fetched." />;
+    return (
+      <LoadingState title="Loading records" description="Please wait while data is fetched." />
+    );
   }
 
   if (!data || data.length === 0) {

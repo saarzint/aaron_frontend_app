@@ -1,21 +1,8 @@
-import { useMemo, useState, createContext, useContext } from 'react';
+import { useMemo, useState } from 'react';
 import { MantineProvider } from '@mantine/core';
 import { createAppTheme } from './tokens';
-import { TENANTS, type TenantConfig } from './tenants';
-
-interface TenantContextValue {
-  tenantId: string;
-  setTenantId: (id: string) => void;
-  tenant: TenantConfig;
-}
-
-const TenantContext = createContext<TenantContextValue | null>(null);
-
-export function useTenant() {
-  const ctx = useContext(TenantContext);
-  if (!ctx) throw new Error('useTenant must be used within TenantThemeProvider');
-  return ctx;
-}
+import { TENANTS } from './tenants';
+import { TenantContext, type TenantContextValue } from './useTenant';
 
 export default function TenantThemeProvider({ children }: { children: React.ReactNode }) {
   const initial = localStorage.getItem('tenantId') ?? 'default';
@@ -33,8 +20,10 @@ export default function TenantThemeProvider({ children }: { children: React.Reac
     setTenantId(id);
   };
 
+  const value: TenantContextValue = { tenantId, setTenantId: setTenant, tenant };
+
   return (
-    <TenantContext.Provider value={{ tenantId, setTenantId: setTenant, tenant }}>
+    <TenantContext.Provider value={value}>
       <MantineProvider theme={mergedTheme} defaultColorScheme="light">
         {children}
       </MantineProvider>

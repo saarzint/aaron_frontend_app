@@ -17,7 +17,11 @@ export default function EmptyState({ title, description, actionLabel, onAction, 
       <Stack align="center" gap="sm" maw={420} ta="center">
         {icon}
         <Typography variant="heading">{title}</Typography>
-        {description && <Text size="sm" c="neutral.6">{description}</Text>}
+        {description && (
+          <Text size="sm" c="neutral.6">
+            {description}
+          </Text>
+        )}
         {actionLabel && onAction && (
           <Button variant="outline" onClick={onAction}>
             {actionLabel}

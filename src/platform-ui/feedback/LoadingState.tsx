@@ -12,7 +12,11 @@ export default function LoadingState({ title = 'Loading', description }: Props) 
       <Stack align="center" gap="xs">
         <Loader color="brand" />
         <Typography variant="heading">{title}</Typography>
-        {description && <Text size="sm" c="neutral.6">{description}</Text>}
+        {description && (
+          <Text size="sm" c="neutral.6">
+            {description}
+          </Text>
+        )}
       </Stack>
     </Center>
   );
