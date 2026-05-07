@@ -1,6 +1,6 @@
-import { TextInput } from '@mantine/core';
+import { TextInput as MantineTextInput } from '@mantine/core';
 import type { TextInputProps } from '@mantine/core';
 
 export default function Input(props: TextInputProps) {
-  return <TextInput radius="md" {...props} />;
+  return <MantineTextInput radius="md" {...props} />;
 }

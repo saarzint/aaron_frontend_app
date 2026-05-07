@@ -1,4 +1,4 @@
-import { Badge } from '@mantine/core';
+import { Badge as MantineBadge } from '@mantine/core';
 import type { BadgeProps } from '@mantine/core';
 
 type Variant = 'primary' | 'neutral' | 'success' | 'warning' | 'danger';
@@ -15,10 +15,10 @@ const variants: Record<Variant, Pick<BadgeProps, 'variant' | 'color'>> = {
   danger: { variant: 'light', color: 'danger' },
 };
 
-export default function BrandedBadge({ variant = 'neutral', children, ...rest }: Props) {
+export default function Badge({ variant = 'neutral', children, ...rest }: Props) {
   return (
-    <Badge {...variants[variant]} {...rest}>
+    <MantineBadge {...variants[variant]} {...rest}>
       {children}
-    </Badge>
+    </MantineBadge>
   );
 }

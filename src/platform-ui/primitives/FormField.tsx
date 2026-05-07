@@ -1,5 +1,5 @@
 import { Stack, Text } from '@mantine/core';
-import type { ReactNode } from 'react';
+import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 
 interface Props {
   label?: string;
@@ -11,6 +11,18 @@ interface Props {
   children: ReactNode;
 }
 
+interface InjectedChildProps {
+  error?: ReactNode;
+  'aria-invalid'?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+const injectIntoControl = (child: ReactNode, injected: InjectedChildProps): ReactNode => {
+  if (!isValidElement(child)) return child;
+  return cloneElement(child as ReactElement<InjectedChildProps>, injected);
+};
+
 export default function FormField({
   label,
   description,
@@ -20,6 +32,18 @@ export default function FormField({
   required,
   children,
 }: Props) {
+  const errorText = typeof error === 'string' ? error : undefined;
+  const isErrored = Boolean(error);
+
+  const enhancedChildren = Children.map(children, (child) =>
+    injectIntoControl(child, {
+      error: errorText || (isErrored ? true : undefined),
+      'aria-invalid': isErrored || undefined,
+      disabled: disabled || undefined,
+      required: required || undefined,
+    })
+  );
+
   return (
     <Stack gap={6} aria-disabled={disabled || undefined}>
       {label && (
@@ -32,15 +56,10 @@ export default function FormField({
           ) : null}
         </Text>
       )}
-      {children}
+      {enhancedChildren}
       {description && !error && !success && (
         <Text size="xs" c="neutral.6">
           {description}
-        </Text>
-      )}
-      {error && typeof error === 'string' && (
-        <Text size="xs" c="danger">
-          {error}
         </Text>
       )}
       {success && !error && (
