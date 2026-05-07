@@ -1,4 +1,10 @@
-import { Button, Group, Text } from '@mantine/core';
+import { Group, Text } from '@mantine/core';
+import { useMemo } from 'react';
+import Button from '@platform-ui/primitives/Button';
+import Avatar from '@platform-ui/primitives/Avatar';
+import Select from '@platform-ui/primitives/Select';
+import { useTenant } from '@platform-ui/theme/useTenant';
+import { TENANTS } from '@platform-ui/theme/tenants';
 
 interface AppTopbarProps {
   userLabel?: string;
@@ -7,19 +13,43 @@ interface AppTopbarProps {
 }
 
 export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarProps) {
+  const { tenantId, setTenantId, tenant } = useTenant();
+
+  const tenantOptions = useMemo(
+    () => Object.values(TENANTS).map((item) => ({ value: item.id, label: item.name })),
+    []
+  );
+
   return (
     <Group justify="space-between" h="100%" px="md">
-      <Group gap="xs">
-        {userLabel && <Text size="sm">{userLabel}</Text>}
-        {roleLabel && (
-          <Text size="xs" c="dimmed">
-            ({roleLabel})
+      <Group gap="sm">
+        <Avatar size="sm" color="brand">
+          {(tenant ?? TENANTS.default).name.slice(0, 1)}
+        </Avatar>
+        <div>
+          <Text size="sm" fw={600}>
+            {userLabel ?? 'Signed in'}
           </Text>
-        )}
+          {roleLabel && (
+            <Text size="xs" c="neutral.6">
+              {roleLabel}
+            </Text>
+          )}
+        </div>
       </Group>
-      <Button variant="subtle" size="xs" onClick={onLogout}>
-        Logout
-      </Button>
+      <Group gap="sm">
+        <Select
+          w={180}
+          value={tenantId}
+          onChange={(value) => value && setTenantId(value)}
+          data={tenantOptions}
+          size="xs"
+          aria-label="Tenant switcher"
+        />
+        <Button variant="ghost" size="xs" onClick={onLogout}>
+          Logout
+        </Button>
+      </Group>
     </Group>
   );
 }
