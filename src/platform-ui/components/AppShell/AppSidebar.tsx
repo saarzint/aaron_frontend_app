@@ -10,9 +10,10 @@ export interface SidebarItem {
 interface AppSidebarProps {
   title: string;
   items: SidebarItem[];
+  onNavigate?: () => void;
 }
 
-export default function AppSidebar({ title, items }: AppSidebarProps) {
+export default function AppSidebar({ title, items, onNavigate }: AppSidebarProps) {
   const location = useLocation();
 
   return (
@@ -27,6 +28,7 @@ export default function AppSidebar({ title, items }: AppSidebarProps) {
           description={item.description}
           component={Link}
           to={item.to ?? '#'}
+          onClick={onNavigate}
           active={Boolean(item.to && location.pathname === item.to)}
           styles={(theme) => ({
             root: {

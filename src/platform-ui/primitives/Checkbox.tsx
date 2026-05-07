@@ -1,6 +1,6 @@
-import { Checkbox } from '@mantine/core';
+import { Checkbox as MantineCheckbox } from '@mantine/core';
 import type { CheckboxProps } from '@mantine/core';
 
-export default function BrandedCheckbox(props: CheckboxProps) {
-  return <Checkbox radius="md" {...props} />;
+export default function Checkbox(props: CheckboxProps) {
+  return <MantineCheckbox radius="md" {...props} />;
 }

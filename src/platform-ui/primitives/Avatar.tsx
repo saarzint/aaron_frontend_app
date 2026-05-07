@@ -1,6 +1,6 @@
-import { Avatar } from '@mantine/core';
+import { Avatar as MantineAvatar } from '@mantine/core';
 import type { AvatarProps } from '@mantine/core';
 
-export default function BrandedAvatar(props: AvatarProps) {
-  return <Avatar radius="xl" {...props} />;
+export default function Avatar(props: AvatarProps) {
+  return <MantineAvatar radius="xl" {...props} />;
 }

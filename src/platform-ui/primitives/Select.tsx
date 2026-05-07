@@ -1,6 +1,6 @@
-import { Select } from '@mantine/core';
+import { Select as MantineSelect } from '@mantine/core';
 import type { SelectProps } from '@mantine/core';
 
-export default function BrandedSelect(props: SelectProps) {
-  return <Select radius="md" {...props} />;
+export default function Select(props: SelectProps) {
+  return <MantineSelect radius="md" {...props} />;
 }

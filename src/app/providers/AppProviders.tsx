@@ -13,11 +13,11 @@ interface AppProvidersProps {
 
 export default function AppProviders({ children }: AppProvidersProps) {
   return (
-    <TenantThemeProvider>
-      <Notifications position="top-right" />
-      <QueryProvider>
+    <QueryProvider>
+      <TenantThemeProvider>
+        <Notifications position="top-right" />
         <AuthProvider>{children}</AuthProvider>
-      </QueryProvider>
-    </TenantThemeProvider>
+      </TenantThemeProvider>
+    </QueryProvider>
   );
 }

@@ -1,6 +1,6 @@
-import { Textarea } from '@mantine/core';
+import { Textarea as MantineTextarea } from '@mantine/core';
 import type { TextareaProps } from '@mantine/core';
 
-export default function BrandedTextarea(props: TextareaProps) {
-  return <Textarea radius="md" {...props} />;
+export default function Textarea(props: TextareaProps) {
+  return <MantineTextarea radius="md" {...props} />;
 }

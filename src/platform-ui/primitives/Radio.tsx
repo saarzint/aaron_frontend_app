@@ -1,6 +1,6 @@
-import { Radio } from '@mantine/core';
+import { Radio as MantineRadio } from '@mantine/core';
 import type { RadioProps } from '@mantine/core';
 
-export default function BrandedRadio(props: RadioProps) {
-  return <Radio radius="md" {...props} />;
+export default function Radio(props: RadioProps) {
+  return <MantineRadio radius="md" {...props} />;
 }
