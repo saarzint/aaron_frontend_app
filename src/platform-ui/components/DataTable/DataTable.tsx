@@ -16,6 +16,7 @@ export default function DataTable<T>({
   isLoading,
   emptyMessage = 'No records to display',
 }: DataTableProps<T>) {
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: data ?? [],
     columns,

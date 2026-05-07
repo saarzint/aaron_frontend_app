@@ -11,6 +11,7 @@ import Badge from '@platform-ui/primitives/Badge';
 import ErrorState from '@platform-ui/feedback/ErrorState';
 import { getOrders, type Order } from '@core/api/services/orderService';
 import { useAuth } from '@core/auth/useAuth';
+import { useTenantQueryKeys } from '@config/queryConfig';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 
 const orderColumns: ColumnDef<Order>[] = [
@@ -42,10 +43,11 @@ const orderColumns: ColumnDef<Order>[] = [
 
 export default function RoleDashboard() {
   const { role } = useAuth();
+  const tenantQueryKeys = useTenantQueryKeys();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
 
   const ordersQuery = useQuery({
-    queryKey: ['orders'],
+    queryKey: tenantQueryKeys.orders(),
     queryFn: getOrders,
   });
 
