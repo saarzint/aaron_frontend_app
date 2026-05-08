@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Navigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
+import { Stack } from '@mantine/core';
 import { useAuth } from '@core/auth/useAuth';
 import { useTenantQueryKeys } from '@config/queryConfig';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
@@ -11,7 +12,6 @@ import DataTable from '@platform-ui/components/DataTable/DataTable';
 import ErrorState from '@platform-ui/feedback/ErrorState';
 import Badge from '@platform-ui/primitives/Badge';
 import Card from '@platform-ui/primitives/Card';
-import Typography from '@platform-ui/primitives/Typography';
 
 const userColumns: ColumnDef<UserMock>[] = [
   { accessorKey: 'id', header: 'ID' },
@@ -44,16 +44,27 @@ export default function UsersPage() {
 
   return (
     <AppShell title={config.title} pageTitle="Users" navigation={config.navigation}>
-      <Card p="md">
-        <Typography variant="heading">Users</Typography>
+      <Stack gap="md">
         {usersQuery.isError && (
           <ErrorState
             title="Failed to load users"
             message={(usersQuery.error as { message?: string })?.message ?? 'Unknown error'}
           />
         )}
-        <DataTable columns={userColumns} data={usersQuery.data} isLoading={usersQuery.isLoading} />
-      </Card>
+        <Card
+          p="lg"
+          style={{
+            border: '1px solid var(--mantine-color-default-border)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          }}
+        >
+          <DataTable
+            columns={userColumns}
+            data={usersQuery.data}
+            isLoading={usersQuery.isLoading}
+          />
+        </Card>
+      </Stack>
     </AppShell>
   );
 }

@@ -8,9 +8,9 @@ interface PrivateRouteProps {
 }
 
 const ROLE_HOME: Record<string, string> = {
-  super_admin: '/dashboard/admin',
-  org_admin: '/dashboard/org',
-  user: '/dashboard/user',
+  super_admin: '/dashboard',
+  org_admin: '/dashboard',
+  user: '/dashboard',
 };
 
 export default function PrivateRoute({ children, allowedRoles }: PrivateRouteProps) {

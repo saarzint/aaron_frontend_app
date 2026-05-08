@@ -13,9 +13,9 @@ interface LoginForm {
 }
 
 const ROLE_ROUTES: Record<string, string> = {
-  super_admin: '/dashboard/admin',
-  org_admin: '/dashboard/org',
-  user: '/dashboard/user',
+  super_admin: '/dashboard',
+  org_admin: '/dashboard',
+  user: '/dashboard',
 };
 
 export default function LoginPage() {
@@ -33,7 +33,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     try {
       const { role } = await loginUser(data);
-      navigate(ROLE_ROUTES[role] ?? '/dashboard/user');
+      navigate(ROLE_ROUTES[role] ?? '/dashboard');
     } catch (err) {
       const message = (err as { message?: string })?.message ?? 'Login failed';
       setError('root', { message });

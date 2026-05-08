@@ -1,105 +1,351 @@
-import { Group, NavLink, ScrollArea, Stack, Text, UnstyledButton } from '@mantine/core';
-import { IconChevronDown, IconSettings } from '@tabler/icons-react';
-import { Link, useLocation } from 'react-router-dom';
+import {
+  ActionIcon,
+  Avatar,
+  Box,
+  Divider,
+  Group,
+  NavLink,
+  ScrollArea,
+  Stack,
+  Switch,
+  Text,
+  Tooltip,
+  UnstyledButton,
+  useMantineColorScheme,
+} from '@mantine/core';
+import {
+  IconChevronDown,
+  IconLayoutDashboard,
+  IconShoppingCart,
+  IconUsers,
+  IconUserCog,
+  IconSettings,
+  IconLogout,
+  IconMoon,
+  IconSun,
+  IconLayoutSidebarLeftCollapse,
+  IconLayoutSidebarLeftExpand,
+} from '@tabler/icons-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import type {
   NavigationConfig,
   NavigationGroup,
   NavigationItem,
 } from '@modules/platform/config/navigationTypes';
+import { useTenantContext } from '@core/tenant/TenantContext';
+import { useAuth } from '@core/auth/useAuth';
+
+const NAV_ICONS: Record<string, React.ComponentType<{ size?: number; stroke?: number }>> = {
+  dashboard: IconLayoutDashboard,
+  orders: IconShoppingCart,
+  customers: IconUsers,
+  users: IconUserCog,
+  settings: IconSettings,
+};
 
 interface AppSidebarProps {
   title: string;
   navigation: NavigationConfig;
   onNavigate?: () => void;
+  onToggle?: () => void;
   collapsed?: boolean;
+  onLogout?: () => void;
 }
 
-/**
- * Scalable collapsible sidebar
- * Supports:
- * - Navigation groups and sections
- * - Active route highlighting
- * - Desktop collapse behavior
- * - Mobile drawer integration
- * - Icon support (future)
- */
 export default function AppSidebar({
   title,
   navigation,
   onNavigate,
+  onToggle,
   collapsed = false,
+  onLogout,
 }: AppSidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { tenant } = useTenantContext();
+  const { user, role, logout } = useAuth();
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
-    navigation.sections.reduce((acc, section) => ({ ...acc, [section.id]: true }), {})
+    navigation.sections.reduce((acc, s) => ({ ...acc, [s.id]: true }), {})
   );
 
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
-    }));
-  };
+  const toggleSection = (id: string) =>
+    setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const isItemActive = (to?: string) => {
     if (!to) return false;
-
-    const currentPath = location.pathname.replace(/\/+$/, '');
-    const targetPath = to.replace(/\/+$/, '');
-
-    return currentPath === targetPath;
+    return location.pathname.replace(/\/+$/, '') === to.replace(/\/+$/, '');
   };
 
-  return (
-    <Stack h="100%" gap={0} p="md" pb="xl">
-      {/* Sidebar Title */}
-      {!collapsed && (
-        <Group justify="space-between" align="center" mb="md" wrap="nowrap">
-          <Text fw={600} size="lg" truncate title={title}>
-            {title}
-          </Text>
-        </Group>
-      )}
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      logout();
+      navigate('/login');
+    }
+  };
 
-      <ScrollArea style={{ flex: 1 }}>
-        <Stack gap={0}>
-          {/* Navigation Sections */}
-          {navigation.sections.length === 0 ? (
-            <Text size="sm" c="neutral.5" ta="center" py="lg">
-              No navigation items
-            </Text>
-          ) : (
-            navigation.sections.map((section) => (
-              <SidebarSection
-                key={section.id}
-                section={section}
-                isExpanded={expandedSections[section.id] ?? true}
-                onToggle={() => toggleSection(section.id)}
-                isItemActive={isItemActive}
-                onNavigate={onNavigate}
-                collapsed={collapsed}
-              />
-            ))
-          )}
+  const brandName = tenant?.name ?? title;
+  const brandInitial = brandName.charAt(0).toUpperCase();
+  const userInitial = user?.email?.charAt(0).toUpperCase() ?? 'U';
+  const roleDisplay = role?.replace(/_/g, ' ') ?? '';
+
+  /* ── Collapsed: icon rail ────────────────────────── */
+  if (collapsed) {
+    const allSectionItems = navigation.sections.flatMap((s) => s.items);
+
+    return (
+      <Stack h="100%" gap={0} align="center" style={{ overflow: 'hidden' }}>
+        {/* 60px brand zone — matches header height exactly */}
+        <Box
+          style={{
+            height: 60,
+            flexShrink: 0,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}
+        >
+          <Tooltip label={brandName} position="right" withArrow>
+            <Avatar size={32} radius="md" color="brand" style={{ cursor: 'default' }}>
+              {brandInitial}
+            </Avatar>
+          </Tooltip>
+          <Tooltip label="Expand sidebar" position="right" withArrow>
+            <ActionIcon
+              onClick={onToggle}
+              variant="subtle"
+              color="gray"
+              size="xs"
+              aria-label="Expand sidebar"
+              style={{ position: 'absolute', top: 8, right: 8 }}
+            >
+              <IconLayoutSidebarLeftExpand size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Box>
+
+        <Divider w="100%" mb="sm" />
+
+        {/* Nav icons */}
+        <Stack gap={4} align="center" style={{ flex: 1 }}>
+          {allSectionItems.map((item) => {
+            const Icon = NAV_ICONS[item.id];
+            const active = isItemActive(item.to);
+            return (
+              <Tooltip key={item.id} label={item.label} position="right" withArrow>
+                <ActionIcon
+                  component={Link}
+                  to={item.to ?? '#'}
+                  variant={active ? 'filled' : 'subtle'}
+                  color={active ? 'brand' : 'gray'}
+                  size="lg"
+                  radius="md"
+                  aria-label={item.label}
+                >
+                  {Icon && <Icon size={18} />}
+                </ActionIcon>
+              </Tooltip>
+            );
+          })}
         </Stack>
-      </ScrollArea>
 
-      {!collapsed && navigation.standaloneItems && navigation.standaloneItems.length > 0 && (
-        <Stack gap="xs" pt="md">
-          {navigation.standaloneItems.map((item) => (
-            <StandaloneNavItem
-              key={item.id}
-              item={item}
-              isActive={isItemActive}
+        {/* Bottom: dark mode, user, logout */}
+        <Stack gap={6} align="center">
+          <Tooltip label={isDark ? 'Light mode' : 'Dark mode'} position="right" withArrow>
+            <ActionIcon
+              onClick={toggleColorScheme}
+              variant="subtle"
+              color="gray"
+              size="lg"
+              radius="md"
+              aria-label="Toggle dark mode"
+            >
+              {isDark ? <IconSun size={18} /> : <IconMoon size={18} />}
+            </ActionIcon>
+          </Tooltip>
+
+          <Divider w={40} />
+
+          <Tooltip label={user?.email ?? 'Account'} position="right" withArrow>
+            <Avatar size={32} radius="xl" color="brand" style={{ cursor: 'default' }}>
+              {userInitial}
+            </Avatar>
+          </Tooltip>
+
+          <Tooltip label="Log out" position="right" withArrow>
+            <ActionIcon
+              onClick={handleLogout}
+              variant="subtle"
+              color="red"
+              size="lg"
+              radius="md"
+              aria-label="Log out"
+            >
+              <IconLogout size={18} />
+            </ActionIcon>
+          </Tooltip>
+        </Stack>
+      </Stack>
+    );
+  }
+
+  /* ── Expanded: full sidebar ──────────────────────── */
+  return (
+    <Stack h="100%" gap={0} style={{ overflow: 'hidden' }}>
+      {/* 60px brand zone — matches header height exactly */}
+      <Box
+        px="md"
+        style={{
+          height: 60,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <Group justify="space-between" wrap="nowrap" gap="xs" style={{ width: '100%' }}>
+          <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+            <Avatar size={32} radius="md" color="brand" style={{ flexShrink: 0 }}>
+              {brandInitial}
+            </Avatar>
+            <Text size="sm" fw={700} truncate>
+              {brandName}
+            </Text>
+          </Group>
+          <Tooltip label="Collapse sidebar" position="right" withArrow>
+            <ActionIcon
+              onClick={onToggle}
+              variant="subtle"
+              color="gray"
+              size="sm"
+              aria-label="Collapse sidebar"
+              style={{ flexShrink: 0 }}
+            >
+              <IconLayoutSidebarLeftCollapse size={16} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      </Box>
+
+      <Divider />
+
+      {/* Navigation */}
+      <ScrollArea style={{ flex: 1 }} scrollbarSize={4}>
+        <Stack gap={0} px="sm" py="sm">
+          {navigation.sections.map((section) => (
+            <SidebarSection
+              key={section.id}
+              section={section}
+              isExpanded={expandedSections[section.id] ?? true}
+              onToggle={() => toggleSection(section.id)}
+              isItemActive={isItemActive}
               onNavigate={onNavigate}
+              extraContent={
+                section.id === 'system' ? (
+                  <DarkModeToggleItem isDark={isDark} onToggle={toggleColorScheme} />
+                ) : undefined
+              }
             />
           ))}
         </Stack>
-      )}
+      </ScrollArea>
+
+      <Divider />
+
+      {/* User profile — no arrow */}
+      <Box px="md" py="sm" style={{ flexShrink: 0 }}>
+        <Group gap="sm" wrap="nowrap">
+          <Avatar size={32} radius="xl" color="brand" style={{ flexShrink: 0 }}>
+            {userInitial}
+          </Avatar>
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <Text size="xs" fw={600} truncate>
+              {user?.email ?? 'User'}
+            </Text>
+            <Text size="xs" c="dimmed" truncate tt="capitalize">
+              {roleDisplay}
+            </Text>
+          </Box>
+        </Group>
+      </Box>
+
+      {/* Logout */}
+      <Box px="sm" pb="sm" style={{ flexShrink: 0 }}>
+        <NavLink
+          label="Log out"
+          leftSection={<IconLogout size={16} stroke={1.5} />}
+          onClick={handleLogout}
+          component="button"
+          styles={(theme) => ({
+            root: {
+              borderRadius: theme.radius.md,
+              padding: '8px 10px',
+              color: theme.colors.red[6],
+              width: '100%',
+              '&:hover': {
+                backgroundColor: theme.colors.red[0],
+              },
+            },
+            label: {
+              fontSize: theme.fontSizes.sm,
+              fontWeight: 500,
+            },
+          })}
+        />
+      </Box>
     </Stack>
   );
 }
+
+/* ─── DarkModeToggleItem ──────────────────────────── */
+
+interface DarkModeToggleItemProps {
+  isDark: boolean;
+  onToggle: () => void;
+}
+
+function DarkModeToggleItem({ isDark, onToggle }: DarkModeToggleItemProps) {
+  return (
+    <Group
+      justify="space-between"
+      align="center"
+      px={10}
+      py={8}
+      style={{ borderRadius: 8, cursor: 'default' }}
+    >
+      <Group gap={10} wrap="nowrap">
+        <Box
+          style={{
+            width: 16,
+            height: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          {isDark ? <IconSun size={16} stroke={1.5} /> : <IconMoon size={16} stroke={1.5} />}
+        </Box>
+        <Text size="sm">Dark mode</Text>
+      </Group>
+      <Switch
+        size="xs"
+        checked={isDark}
+        onChange={onToggle}
+        aria-label="Toggle dark mode"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Group>
+  );
+}
+
+/* ─── SidebarSection ──────────────────────────────── */
 
 interface SidebarSectionProps {
   section: NavigationGroup;
@@ -107,7 +353,7 @@ interface SidebarSectionProps {
   onToggle: () => void;
   isItemActive: (to?: string) => boolean;
   onNavigate?: () => void;
-  collapsed?: boolean;
+  extraContent?: React.ReactNode;
 }
 
 function SidebarSection({
@@ -116,96 +362,84 @@ function SidebarSection({
   onToggle,
   isItemActive,
   onNavigate,
-  collapsed,
+  extraContent,
 }: SidebarSectionProps) {
   return (
-    <Stack gap={0} mb="sm">
-      {/* Section Header */}
-      {!collapsed && section.label && (
-        <UnstyledButton onClick={onToggle} p={0} mb="xs" style={{ width: '100%' }}>
-          <Group justify="space-between" align="center" wrap="nowrap">
-            <Text size="xs" fw={700} c="neutral.5" tt="uppercase">
+    <Box mb="xs">
+      {section.label && (
+        <UnstyledButton onClick={onToggle} w="100%" mb={4}>
+          <Group justify="space-between" align="center" px={4} py={2} wrap="nowrap">
+            <Text size="xs" fw={600} c="dimmed" tt="uppercase" style={{ letterSpacing: '0.05em' }}>
               {section.label}
             </Text>
             <IconChevronDown
-              size={14}
+              size={12}
               style={{
-                transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                color: 'var(--mantine-color-dimmed)',
+                transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
                 transition: 'transform 150ms ease',
+                flexShrink: 0,
               }}
             />
           </Group>
         </UnstyledButton>
       )}
 
-      {/* Section Items - Conditionally Rendered */}
       {isExpanded && (
-        <Stack gap="xs" mt="xs">
+        <Stack gap={2}>
           {section.items.map((item) => (
-            <NavLink
+            <FullNavItem
               key={item.id}
-              label={item.label}
-              description={item.description}
-              component={Link}
-              to={item.to ?? '#'}
-              onClick={onNavigate}
-              active={isItemActive(item.to)}
-              title={item.label}
-              styles={(theme) => ({
-                root: {
-                  borderRadius: 6,
-                  '&[data-active]': {
-                    backgroundColor: theme.colors.brand[0],
-                    color: theme.colors.brand[7],
-                    fontWeight: 600,
-                  },
-                  '&[data-active]:hover': {
-                    backgroundColor: theme.colors.brand[1],
-                  },
-                  '&:hover': {
-                    backgroundColor: theme.colors.neutral[1],
-                  },
-                },
-              })}
+              item={item}
+              isActive={isItemActive(item.to)}
+              onNavigate={onNavigate}
             />
           ))}
+          {extraContent}
         </Stack>
       )}
-    </Stack>
+    </Box>
   );
 }
 
-interface StandaloneNavItemProps {
+/* ─── FullNavItem ─────────────────────────────────── */
+
+interface FullNavItemProps {
   item: NavigationItem;
-  isActive: (to?: string) => boolean;
+  isActive: boolean;
   onNavigate?: () => void;
 }
 
-function StandaloneNavItem({ item, isActive, onNavigate }: StandaloneNavItemProps) {
+function FullNavItem({ item, isActive, onNavigate }: FullNavItemProps) {
+  const Icon = NAV_ICONS[item.id];
+
   return (
     <NavLink
       label={item.label}
-      description={item.description}
-      leftSection={<IconSettings size={16} />}
+      leftSection={Icon ? <Icon size={16} stroke={1.5} /> : undefined}
       component={Link}
       to={item.to ?? '#'}
       onClick={onNavigate}
-      active={isActive(item.to)}
+      active={isActive}
       title={item.label}
       styles={(theme) => ({
         root: {
-          borderRadius: 6,
+          borderRadius: theme.radius.md,
+          padding: '8px 10px',
+          fontWeight: isActive ? 600 : 400,
           '&[data-active]': {
             backgroundColor: theme.colors.brand[0],
             color: theme.colors.brand[7],
-            fontWeight: 600,
           },
           '&[data-active]:hover': {
             backgroundColor: theme.colors.brand[1],
           },
-          '&:hover': {
-            backgroundColor: theme.colors.neutral[1],
+          '&:hover:not([data-active])': {
+            backgroundColor: 'var(--mantine-color-default-hover)',
           },
+        },
+        label: {
+          fontSize: theme.fontSizes.sm,
         },
       })}
     />

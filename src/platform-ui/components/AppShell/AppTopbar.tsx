@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Loader, Menu, Stack, Text } from '@mantine/core';
+import { ActionIcon, Box, Group, Loader, Menu, Text } from '@mantine/core';
 import { IconLogout, IconUser, IconSettings } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
 import Avatar from '@platform-ui/primitives/Avatar';
@@ -8,7 +8,6 @@ import { useTenantQueryClient } from '@config/queryConfig';
 import { TENANTS } from '@platform-ui/theme/tenants';
 import GlobalSearch from '../Navigation/GlobalSearch';
 import NotificationsArea from '../Navigation/NotificationsArea';
-import DynamicBreadcrumbs from '../Navigation/DynamicBreadcrumbs';
 
 interface AppTopbarProps {
   userLabel?: string;
@@ -16,7 +15,6 @@ interface AppTopbarProps {
   pageTitle?: string;
   onLogout: () => void;
   onSettings: () => void;
-  showBreadcrumbs?: boolean;
   showSearch?: boolean;
   showNotifications?: boolean;
 }
@@ -27,11 +25,10 @@ export default function AppTopbar({
   pageTitle,
   onLogout,
   onSettings,
-  showBreadcrumbs = true,
   showSearch = true,
   showNotifications = true,
 }: AppTopbarProps) {
-  const { tenantId, tenant, isLoading: isTenantLoading, switchTenant } = useTenantContext();
+  const { tenantId, isLoading: isTenantLoading, switchTenant } = useTenantContext();
   const { invalidateAllTenantQueries, clearTenantCache } = useTenantQueryClient();
   const [isLoadingSwitch, setIsLoadingSwitch] = useState(false);
 
@@ -42,7 +39,6 @@ export default function AppTopbar({
 
   const handleTenantChange = async (value: string | null) => {
     if (!value || value === tenantId) return;
-
     setIsLoadingSwitch(true);
     try {
       clearTenantCache();
@@ -53,94 +49,80 @@ export default function AppTopbar({
     }
   };
 
-  const displayTenant = tenant || TENANTS.default;
   const isLoading = isTenantLoading || isLoadingSwitch;
 
   return (
-    <Stack gap={0} style={{ flex: 1, height: '100%', justifyContent: 'space-between' }}>
-      {/* Top Row: Tenant, Title, Search, Notifications, User Menu */}
-      <Group justify="space-between" h={60} px="md" gap="md" wrap="nowrap">
-        {/* Left: Tenant Avatar + Title Area */}
-        <Group gap="sm" style={{ flex: 1, minWidth: 0 }}>
-          <Avatar size="sm" color="brand">
-            {displayTenant.name.slice(0, 1)}
-          </Avatar>
-          {pageTitle && (
-            <Text size="md" fw={600} truncate>
-              {pageTitle}
-            </Text>
-          )}
-        </Group>
-
-        {/* Center: Search */}
-        {showSearch && <GlobalSearch onSearch={() => {}} />}
-
-        {/* Right: Notifications, User Menu */}
-        <Group gap="sm" wrap="nowrap">
-          {showNotifications && <NotificationsArea />}
-
-          {/* Tenant Switcher */}
-          <Select
-            w={140}
-            value={tenantId}
-            onChange={handleTenantChange}
-            data={tenantOptions}
-            size="xs"
-            aria-label="Tenant switcher"
-            disabled={isLoading}
-            rightSection={isLoading ? <Loader size="xs" /> : undefined}
-          />
-
-          {/* User Menu */}
-          <Menu position="bottom-end" withArrow>
-            <Menu.Target>
-              <ActionIcon variant="subtle" size="lg" disabled={isLoading}>
-                <Avatar size="sm" color="brand">
-                  {userLabel?.charAt(0).toUpperCase() ?? 'U'}
-                </Avatar>
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item disabled leftSection={<IconUser size={14} />}>
-                {userLabel ? (
-                  <>
-                    <div>
-                      <Text size="sm" fw={600}>
-                        {userLabel}
-                      </Text>
-                      {roleLabel && (
-                        <Text size="xs" c="neutral.6">
-                          {roleLabel}
-                        </Text>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  'Profile'
-                )}
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Item leftSection={<IconSettings size={14} />} onClick={onSettings}>
-                Settings
-              </Menu.Item>
-              <Menu.Item
-                leftSection={<IconLogout size={14} />}
-                onClick={onLogout}
-                disabled={isLoading}
-              >
-                Logout
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
+    <Group justify="space-between" h="100%" style={{ flex: 1 }} wrap="nowrap" gap="md">
+      {/* Left: Page title */}
+      <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+        {pageTitle && (
+          <Text size="md" fw={600} truncate>
+            {pageTitle}
+          </Text>
+        )}
       </Group>
 
-      {/* Bottom Row: Breadcrumbs */}
-      {showBreadcrumbs && (
-        <Group h={40} px="md" wrap="nowrap">
-          <DynamicBreadcrumbs />
-        </Group>
-      )}
-    </Stack>
+      {/* Right: Search, Notifications, Tenant, User */}
+      <Group gap="sm" wrap="nowrap" style={{ flexShrink: 0 }}>
+        {showSearch && (
+          <Box visibleFrom="sm">
+            <GlobalSearch onSearch={() => {}} />
+          </Box>
+        )}
+
+        {showNotifications && <NotificationsArea />}
+
+        <Select
+          w={130}
+          value={tenantId}
+          onChange={handleTenantChange}
+          data={tenantOptions}
+          size="xs"
+          aria-label="Tenant switcher"
+          disabled={isLoading}
+          rightSection={isLoading ? <Loader size="xs" /> : undefined}
+        />
+
+        <Menu position="bottom-end" withArrow>
+          <Menu.Target>
+            <ActionIcon variant="subtle" size="lg" disabled={isLoading} aria-label="User menu">
+              <Avatar size="sm" color="brand">
+                {userLabel?.charAt(0).toUpperCase() ?? 'U'}
+              </Avatar>
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item disabled leftSection={<IconUser size={14} />}>
+              {userLabel ? (
+                <Box>
+                  <Text size="sm" fw={600}>
+                    {userLabel}
+                  </Text>
+                  {roleLabel && (
+                    <Text size="xs" c="dimmed" tt="capitalize">
+                      {roleLabel.replace(/_/g, ' ')}
+                    </Text>
+                  )}
+                </Box>
+              ) : (
+                'Profile'
+              )}
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item leftSection={<IconSettings size={14} />} onClick={onSettings}>
+              Settings
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<IconLogout size={14} />}
+              onClick={onLogout}
+              color="red"
+              disabled={isLoading}
+            >
+              Log out
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
+    </Group>
   );
 }

@@ -9,25 +9,29 @@ interface RoleConfig {
 
 export const ROLE_CONFIG: Record<AppRole, RoleConfig> = {
   super_admin: {
-    title: 'Admin',
+    title: 'Admin Platform',
     navigation: {
       sections: [
         {
           id: 'main',
           label: 'Main',
           items: [
-            { id: 'orders', label: 'Orders', to: '/dashboard/admin' },
-            { id: 'customers', label: 'Customers', to: '/dashboard/admin/customers' },
+            { id: 'dashboard', label: 'Dashboard', to: '/dashboard' },
+            { id: 'orders', label: 'Orders', to: '/orders' },
+            { id: 'customers', label: 'Customers', to: '/customers' },
           ],
         },
         {
           id: 'admin',
           label: 'Administration',
-          items: [{ id: 'users', label: 'Users', to: '/dashboard/admin/users' }],
+          items: [{ id: 'users', label: 'Users', to: '/users' }],
+        },
+        {
+          id: 'system',
+          label: 'System',
+          items: [{ id: 'settings', label: 'Settings', to: '/settings' }],
         },
       ],
-      standaloneItems: [{ id: 'settings', label: 'Settings', to: '/dashboard/admin/settings' }],
-      showBreadcrumbs: true,
       showSearch: true,
       showNotifications: true,
     },
@@ -40,13 +44,17 @@ export const ROLE_CONFIG: Record<AppRole, RoleConfig> = {
           id: 'main',
           label: 'Main',
           items: [
-            { id: 'orders', label: 'Orders', to: '/dashboard/org' },
-            { id: 'customers', label: 'Customers', to: '/dashboard/org/customers' },
+            { id: 'dashboard', label: 'Dashboard', to: '/dashboard' },
+            { id: 'orders', label: 'Orders', to: '/orders' },
+            { id: 'customers', label: 'Customers', to: '/customers' },
           ],
         },
+        {
+          id: 'system',
+          label: 'System',
+          items: [{ id: 'settings', label: 'Settings', to: '/settings' }],
+        },
       ],
-      standaloneItems: [{ id: 'settings', label: 'Settings', to: '/dashboard/org/settings' }],
-      showBreadcrumbs: true,
       showSearch: true,
       showNotifications: true,
     },
@@ -58,13 +66,19 @@ export const ROLE_CONFIG: Record<AppRole, RoleConfig> = {
         {
           id: 'main',
           label: 'Main',
-          items: [{ id: 'orders', label: 'Orders', to: '/dashboard/user' }],
+          items: [
+            { id: 'dashboard', label: 'Dashboard', to: '/dashboard' },
+            { id: 'orders', label: 'Orders', to: '/orders' },
+          ],
+        },
+        {
+          id: 'system',
+          label: 'System',
+          items: [{ id: 'settings', label: 'Settings', to: '/settings' }],
         },
       ],
-      standaloneItems: [{ id: 'settings', label: 'Settings', to: '/dashboard/user/settings' }],
-      showBreadcrumbs: true,
-      showSearch: false,
-      showNotifications: false,
+      showSearch: true,
+      showNotifications: true,
     },
   },
 };

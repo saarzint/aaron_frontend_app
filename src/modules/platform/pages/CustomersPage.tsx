@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Navigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
+import { Stack } from '@mantine/core';
 import { useAuth } from '@core/auth/useAuth';
 import { useTenantQueryKeys } from '@config/queryConfig';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
@@ -11,7 +12,6 @@ import DataTable from '@platform-ui/components/DataTable/DataTable';
 import ErrorState from '@platform-ui/feedback/ErrorState';
 import Badge from '@platform-ui/primitives/Badge';
 import Card from '@platform-ui/primitives/Card';
-import Typography from '@platform-ui/primitives/Typography';
 
 const customerColumns: ColumnDef<CustomerMock>[] = [
   { accessorKey: 'id', header: 'ID' },
@@ -44,20 +44,27 @@ export default function CustomersPage() {
 
   return (
     <AppShell title={config.title} pageTitle="Customers" navigation={config.navigation}>
-      <Card p="md">
-        <Typography variant="heading">Customers</Typography>
+      <Stack gap="md">
         {customersQuery.isError && (
           <ErrorState
             title="Failed to load customers"
             message={(customersQuery.error as { message?: string })?.message ?? 'Unknown error'}
           />
         )}
-        <DataTable
-          columns={customerColumns}
-          data={customersQuery.data}
-          isLoading={customersQuery.isLoading}
-        />
-      </Card>
+        <Card
+          p="lg"
+          style={{
+            border: '1px solid var(--mantine-color-default-border)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          }}
+        >
+          <DataTable
+            columns={customerColumns}
+            data={customersQuery.data}
+            isLoading={customersQuery.isLoading}
+          />
+        </Card>
+      </Stack>
     </AppShell>
   );
 }

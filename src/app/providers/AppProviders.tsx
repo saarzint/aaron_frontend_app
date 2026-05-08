@@ -7,6 +7,7 @@ import TenantThemeProviderContent from '@platform-ui/theme/TenantThemeProvider';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import '@mantine/charts/styles.css';
 
 interface AppProvidersProps {
   children: ReactNode;
