@@ -1,19 +1,36 @@
-import { Group, Text, Loader } from '@mantine/core';
+import { ActionIcon, Group, Loader, Menu, Stack, Text } from '@mantine/core';
+import { IconLogout, IconUser, IconSettings } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
-import Button from '@platform-ui/primitives/Button';
 import Avatar from '@platform-ui/primitives/Avatar';
 import Select from '@platform-ui/primitives/Select';
 import { useTenantContext } from '@core/tenant/TenantContext';
 import { useTenantQueryClient } from '@config/queryConfig';
 import { TENANTS } from '@platform-ui/theme/tenants';
+import GlobalSearch from '../Navigation/GlobalSearch';
+import NotificationsArea from '../Navigation/NotificationsArea';
+import DynamicBreadcrumbs from '../Navigation/DynamicBreadcrumbs';
 
 interface AppTopbarProps {
   userLabel?: string;
   roleLabel?: string;
+  pageTitle?: string;
   onLogout: () => void;
+  onSettings: () => void;
+  showBreadcrumbs?: boolean;
+  showSearch?: boolean;
+  showNotifications?: boolean;
 }
 
-export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarProps) {
+export default function AppTopbar({
+  userLabel,
+  roleLabel,
+  pageTitle,
+  onLogout,
+  onSettings,
+  showBreadcrumbs = true,
+  showSearch = true,
+  showNotifications = true,
+}: AppTopbarProps) {
   const { tenantId, tenant, isLoading: isTenantLoading, switchTenant } = useTenantContext();
   const { invalidateAllTenantQueries, clearTenantCache } = useTenantQueryClient();
   const [isLoadingSwitch, setIsLoadingSwitch] = useState(false);
@@ -28,13 +45,8 @@ export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarP
 
     setIsLoadingSwitch(true);
     try {
-      // Clear current tenant's cache before switching
       clearTenantCache();
-
-      // Switch to new tenant
       await switchTenant(value);
-
-      // Invalidate all queries for new tenant (will trigger refetch on next mount)
       await invalidateAllTenantQueries();
     } finally {
       setIsLoadingSwitch(false);
@@ -45,26 +57,31 @@ export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarP
   const isLoading = isTenantLoading || isLoadingSwitch;
 
   return (
-    <Group justify="space-between" h="100%" px="md">
-      <Group gap="sm">
-        <Avatar size="sm" color="brand">
-          {displayTenant.name.slice(0, 1)}
-        </Avatar>
-        <div>
-          <Text size="sm" fw={600}>
-            {userLabel ?? 'Signed in'}
-          </Text>
-          {roleLabel && (
-            <Text size="xs" c="neutral.6">
-              {roleLabel}
+    <Stack gap={0} style={{ flex: 1, height: '100%', justifyContent: 'space-between' }}>
+      {/* Top Row: Tenant, Title, Search, Notifications, User Menu */}
+      <Group justify="space-between" h={60} px="md" gap="md" wrap="nowrap">
+        {/* Left: Tenant Avatar + Title Area */}
+        <Group gap="sm" style={{ flex: 1, minWidth: 0 }}>
+          <Avatar size="sm" color="brand">
+            {displayTenant.name.slice(0, 1)}
+          </Avatar>
+          {pageTitle && (
+            <Text size="md" fw={600} truncate>
+              {pageTitle}
             </Text>
           )}
-        </div>
-      </Group>
-      <Group gap="sm">
-        <div style={{ position: 'relative', width: 180 }}>
+        </Group>
+
+        {/* Center: Search */}
+        {showSearch && <GlobalSearch onSearch={() => {}} />}
+
+        {/* Right: Notifications, User Menu */}
+        <Group gap="sm" wrap="nowrap">
+          {showNotifications && <NotificationsArea />}
+
+          {/* Tenant Switcher */}
           <Select
-            w={180}
+            w={140}
             value={tenantId}
             onChange={handleTenantChange}
             data={tenantOptions}
@@ -73,11 +90,57 @@ export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarP
             disabled={isLoading}
             rightSection={isLoading ? <Loader size="xs" /> : undefined}
           />
-        </div>
-        <Button variant="ghost" size="xs" onClick={onLogout} disabled={isLoading}>
-          Logout
-        </Button>
+
+          {/* User Menu */}
+          <Menu position="bottom-end" withArrow>
+            <Menu.Target>
+              <ActionIcon variant="subtle" size="lg" disabled={isLoading}>
+                <Avatar size="sm" color="brand">
+                  {userLabel?.charAt(0).toUpperCase() ?? 'U'}
+                </Avatar>
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item disabled leftSection={<IconUser size={14} />}>
+                {userLabel ? (
+                  <>
+                    <div>
+                      <Text size="sm" fw={600}>
+                        {userLabel}
+                      </Text>
+                      {roleLabel && (
+                        <Text size="xs" c="neutral.6">
+                          {roleLabel}
+                        </Text>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  'Profile'
+                )}
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item leftSection={<IconSettings size={14} />} onClick={onSettings}>
+                Settings
+              </Menu.Item>
+              <Menu.Item
+                leftSection={<IconLogout size={14} />}
+                onClick={onLogout}
+                disabled={isLoading}
+              >
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
       </Group>
-    </Group>
+
+      {/* Bottom Row: Breadcrumbs */}
+      {showBreadcrumbs && (
+        <Group h={40} px="md" wrap="nowrap">
+          <DynamicBreadcrumbs />
+        </Group>
+      )}
+    </Stack>
   );
 }

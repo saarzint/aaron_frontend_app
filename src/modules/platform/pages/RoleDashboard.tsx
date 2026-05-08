@@ -54,7 +54,7 @@ export default function RoleDashboard() {
   if (!config) return <Navigate to="/login" replace />;
 
   return (
-    <AppShell title={config.title} navItems={config.modules}>
+    <AppShell title={config.title} pageTitle="Orders" navigation={config.navigation}>
       <Stack gap="md">
         <Typography variant="heading">Orders</Typography>
         {ordersQuery.isError && (
