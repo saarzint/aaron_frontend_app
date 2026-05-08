@@ -1,9 +1,10 @@
-import { Group, Text } from '@mantine/core';
-import { useMemo } from 'react';
+import { Group, Text, Loader } from '@mantine/core';
+import { useMemo, useState } from 'react';
 import Button from '@platform-ui/primitives/Button';
 import Avatar from '@platform-ui/primitives/Avatar';
 import Select from '@platform-ui/primitives/Select';
-import { useTenant } from '@platform-ui/theme/useTenant';
+import { useTenantContext } from '@core/tenant/TenantContext';
+import { useTenantQueryClient } from '@config/queryConfig';
 import { TENANTS } from '@platform-ui/theme/tenants';
 
 interface AppTopbarProps {
@@ -13,18 +14,41 @@ interface AppTopbarProps {
 }
 
 export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarProps) {
-  const { tenantId, setTenantId, tenant } = useTenant();
+  const { tenantId, tenant, isLoading: isTenantLoading, switchTenant } = useTenantContext();
+  const { invalidateAllTenantQueries, clearTenantCache } = useTenantQueryClient();
+  const [isLoadingSwitch, setIsLoadingSwitch] = useState(false);
 
   const tenantOptions = useMemo(
     () => Object.values(TENANTS).map((item) => ({ value: item.id, label: item.name })),
     []
   );
 
+  const handleTenantChange = async (value: string | null) => {
+    if (!value || value === tenantId) return;
+
+    setIsLoadingSwitch(true);
+    try {
+      // Clear current tenant's cache before switching
+      clearTenantCache();
+
+      // Switch to new tenant
+      await switchTenant(value);
+
+      // Invalidate all queries for new tenant (will trigger refetch on next mount)
+      await invalidateAllTenantQueries();
+    } finally {
+      setIsLoadingSwitch(false);
+    }
+  };
+
+  const displayTenant = tenant || TENANTS.default;
+  const isLoading = isTenantLoading || isLoadingSwitch;
+
   return (
     <Group justify="space-between" h="100%" px="md">
       <Group gap="sm">
         <Avatar size="sm" color="brand">
-          {(tenant ?? TENANTS.default).name.slice(0, 1)}
+          {displayTenant.name.slice(0, 1)}
         </Avatar>
         <div>
           <Text size="sm" fw={600}>
@@ -38,15 +62,19 @@ export default function AppTopbar({ userLabel, roleLabel, onLogout }: AppTopbarP
         </div>
       </Group>
       <Group gap="sm">
-        <Select
-          w={180}
-          value={tenantId}
-          onChange={(value) => value && setTenantId(value)}
-          data={tenantOptions}
-          size="xs"
-          aria-label="Tenant switcher"
-        />
-        <Button variant="ghost" size="xs" onClick={onLogout}>
+        <div style={{ position: 'relative', width: 180 }}>
+          <Select
+            w={180}
+            value={tenantId}
+            onChange={handleTenantChange}
+            data={tenantOptions}
+            size="xs"
+            aria-label="Tenant switcher"
+            disabled={isLoading}
+            rightSection={isLoading ? <Loader size="xs" /> : undefined}
+          />
+        </div>
+        <Button variant="ghost" size="xs" onClick={onLogout} disabled={isLoading}>
           Logout
         </Button>
       </Group>

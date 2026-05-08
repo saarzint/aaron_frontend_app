@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { Notifications } from '@mantine/notifications';
 import QueryProvider from './QueryProvider';
+import { TenantProvider } from '@core/tenant/TenantContext';
 import { AuthProvider } from '@core/auth/AuthProvider';
-import TenantThemeProvider from '@platform-ui/theme/TenantThemeProvider';
+import TenantThemeProviderContent from '@platform-ui/theme/TenantThemeProvider';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
@@ -14,10 +15,12 @@ interface AppProvidersProps {
 export default function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryProvider>
-      <TenantThemeProvider>
-        <Notifications position="top-right" />
-        <AuthProvider>{children}</AuthProvider>
-      </TenantThemeProvider>
+      <TenantProvider>
+        <TenantThemeProviderContent>
+          <Notifications position="top-right" />
+          <AuthProvider>{children}</AuthProvider>
+        </TenantThemeProviderContent>
+      </TenantProvider>
     </QueryProvider>
   );
 }
