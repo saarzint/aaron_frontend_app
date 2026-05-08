@@ -1,11 +1,13 @@
 import { ActionIcon, Box, Group, Loader, Menu, Text } from '@mantine/core';
 import { IconLogout, IconUser, IconSettings } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Avatar from '@platform-ui/primitives/Avatar';
 import Select from '@platform-ui/primitives/Select';
 import { useTenantContext } from '@core/tenant/TenantContext';
 import { useTenantQueryClient } from '@config/queryConfig';
 import { TENANTS } from '@platform-ui/theme/tenants';
+import { toast } from '@core/toast/toast';
 import GlobalSearch from '../Navigation/GlobalSearch';
 import NotificationsArea from '../Navigation/NotificationsArea';
 
@@ -30,6 +32,8 @@ export default function AppTopbar({
 }: AppTopbarProps) {
   const { tenantId, isLoading: isTenantLoading, switchTenant } = useTenantContext();
   const { invalidateAllTenantQueries, clearTenantCache } = useTenantQueryClient();
+  const { t } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
   const [isLoadingSwitch, setIsLoadingSwitch] = useState(false);
 
   const tenantOptions = useMemo(
@@ -44,9 +48,20 @@ export default function AppTopbar({
       clearTenantCache();
       await switchTenant(value);
       await invalidateAllTenantQueries();
+      toast.success({
+        title: 'Workspace switched',
+        message: `Now viewing ${TENANTS[value as keyof typeof TENANTS]?.name ?? value}`,
+      });
+    } catch {
+      toast.error({ message: 'Failed to switch workspace. Please try again.' });
     } finally {
       setIsLoadingSwitch(false);
     }
+  };
+
+  const handleLogout = () => {
+    toast.info({ message: tCommon('auth.logout.success', 'You have been signed out') });
+    onLogout();
   };
 
   const isLoading = isTenantLoading || isLoadingSwitch;
@@ -105,20 +120,20 @@ export default function AppTopbar({
                   )}
                 </Box>
               ) : (
-                'Profile'
+                tCommon('labels.name', 'Profile')
               )}
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item leftSection={<IconSettings size={14} />} onClick={onSettings}>
-              Settings
+              {t('settings')}
             </Menu.Item>
             <Menu.Item
               leftSection={<IconLogout size={14} />}
-              onClick={onLogout}
+              onClick={handleLogout}
               color="red"
               disabled={isLoading}
             >
-              Log out
+              {t('logout')}
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>

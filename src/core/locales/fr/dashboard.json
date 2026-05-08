@@ -1,0 +1,16 @@
+{
+  "pageTitle": "Tableau de bord",
+  "stats": {
+    "totalCustomers": "Total clients",
+    "totalRevenue": "Chiffre d'affaires",
+    "totalOrders": "Total commandes",
+    "totalReturns": "Total retours"
+  },
+  "charts": {
+    "productSales": "Ventes produits",
+    "salesByCategory": "Ventes par catégorie",
+    "salesByCountry": "Ventes par pays",
+    "grossMargin": "Marge brute",
+    "revenue": "Revenus"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "pageTitle": "Clients",
+  "columns": {
+    "id": "ID",
+    "name": "Nom",
+    "email": "E-mail",
+    "company": "Société",
+    "status": "Statut"
+  },
+  "errors": {
+    "loadFailed": "Échec du chargement des clients"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "pageTitle": "Settings",
+  "sections": {
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "security": "Security",
+    "appearance": "Appearance"
+  },
+  "language": {
+    "label": "Language",
+    "description": "Choose your preferred display language"
+  },
+  "notifications": {
+    "label": "Notifications",
+    "description": "Manage notification preferences"
+  },
+  "profile": {
+    "label": "Profile",
+    "settings": "Settings"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "refresh": "Refresh",
+    "retry": "Try again",
+    "reload": "Reload page",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "viewAll": "View all"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "completed": "Completed",
+    "processing": "Processing",
+    "cancelled": "Cancelled",
+    "failed": "Failed",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "labels": {
+    "loading": "Loading…",
+    "noData": "No data available",
+    "vsPeriod": "vs last period",
+    "id": "ID",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "company": "Company",
+    "date": "Date",
+    "total": "Total",
+    "lastActive": "Last Active"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "genericDescription": "An unexpected error occurred. Please try again.",
+    "networkError": "Network error",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized"
+  },
+  "theme": {
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "fr": "Français"
+  }
+}

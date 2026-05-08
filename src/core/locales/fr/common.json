@@ -1,0 +1,59 @@
+{
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "refresh": "Actualiser",
+    "retry": "Réessayer",
+    "reload": "Recharger la page",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "viewAll": "Tout voir"
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Inactif",
+    "pending": "En attente",
+    "completed": "Terminé",
+    "processing": "En cours",
+    "cancelled": "Annulé",
+    "failed": "Échoué",
+    "enabled": "Activé",
+    "disabled": "Désactivé"
+  },
+  "labels": {
+    "loading": "Chargement…",
+    "noData": "Aucune donnée disponible",
+    "vsPeriod": "vs période précédente",
+    "id": "ID",
+    "name": "Nom",
+    "email": "E-mail",
+    "role": "Rôle",
+    "company": "Société",
+    "date": "Date",
+    "total": "Total",
+    "lastActive": "Dernière activité"
+  },
+  "errors": {
+    "generic": "Une erreur est survenue",
+    "genericDescription": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+    "networkError": "Erreur réseau",
+    "notFound": "Introuvable",
+    "unauthorized": "Non autorisé"
+  },
+  "theme": {
+    "darkMode": "Mode sombre",
+    "lightMode": "Mode clair"
+  },
+  "language": {
+    "label": "Langue",
+    "en": "English",
+    "fr": "Français"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "dashboard": "Dashboard",
+  "orders": "Orders",
+  "customers": "Customers",
+  "users": "Users",
+  "settings": "Settings",
+  "sections": {
+    "main": "Main",
+    "admin": "Administration",
+    "management": "Management",
+    "system": "System"
+  },
+  "logout": "Log out",
+  "expandSidebar": "Expand sidebar",
+  "collapseSidebar": "Collapse sidebar"
+}

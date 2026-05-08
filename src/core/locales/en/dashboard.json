@@ -1,0 +1,16 @@
+{
+  "pageTitle": "Dashboard",
+  "stats": {
+    "totalCustomers": "Total Customers",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "totalReturns": "Total Returns"
+  },
+  "charts": {
+    "productSales": "Product sales",
+    "salesByCategory": "Sales by product category",
+    "salesByCountry": "Sales by countries",
+    "grossMargin": "Gross margin",
+    "revenue": "Revenue"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "dashboard": "Tableau de bord",
+  "orders": "Commandes",
+  "customers": "Clients",
+  "users": "Utilisateurs",
+  "settings": "Paramètres",
+  "sections": {
+    "main": "Principal",
+    "admin": "Administration",
+    "management": "Gestion",
+    "system": "Système"
+  },
+  "logout": "Se déconnecter",
+  "expandSidebar": "Développer la barre latérale",
+  "collapseSidebar": "Réduire la barre latérale"
+}
