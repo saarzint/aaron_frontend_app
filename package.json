@@ -25,9 +25,12 @@
     "@tanstack/react-query": "^5.100.5",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.15.2",
+    "i18next": "^26.0.10",
+    "i18next-browser-languagedetector": "^8.2.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hook-form": "^7.74.0",
+    "react-i18next": "^17.0.7",
     "react-router-dom": "^7.14.2",
     "recharts": "^3.8.1",
     "zod": "^4.3.6"

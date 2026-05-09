@@ -1,11 +1,13 @@
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Alert, PasswordInput, Stack } from '@mantine/core';
 import { useAuth } from '@core/auth/useAuth';
 import AuthLayout from '@platform-ui/layouts/AuthLayout';
 import Button from '@platform-ui/primitives/Button';
 import FormField from '@platform-ui/primitives/FormField';
 import Input from '@platform-ui/primitives/Input';
+import { toast } from '@core/toast/toast';
 
 interface LoginForm {
   email: string;
@@ -21,6 +23,7 @@ const ROLE_ROUTES: Record<string, string> = {
 export default function LoginPage() {
   const { loginUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation('auth');
   const {
     control,
     handleSubmit,
@@ -33,23 +36,24 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     try {
       const { role } = await loginUser(data);
+      toast.success({ message: 'Welcome back!' });
       navigate(ROLE_ROUTES[role] ?? '/dashboard');
     } catch (err) {
-      const message = (err as { message?: string })?.message ?? 'Login failed';
+      const message = (err as { message?: string })?.message ?? t('login.errors.loginFailed');
       setError('root', { message });
     }
   };
 
   return (
-    <AuthLayout title="Sign in" subtitle="Access your workspace">
+    <AuthLayout title={t('login.title')} subtitle={t('login.subtitle')}>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack gap="md">
           <Controller
             name="email"
             control={control}
-            rules={{ required: 'Email is required' }}
+            rules={{ required: t('login.errors.emailRequired') }}
             render={({ field }) => (
-              <FormField label="Email" error={errors.email?.message} required>
+              <FormField label={t('login.email')} error={errors.email?.message} required>
                 <Input {...field} type="email" autoComplete="email" />
               </FormField>
             )}
@@ -57,9 +61,9 @@ export default function LoginPage() {
           <Controller
             name="password"
             control={control}
-            rules={{ required: 'Password is required' }}
+            rules={{ required: t('login.errors.passwordRequired') }}
             render={({ field }) => (
-              <FormField label="Password" error={errors.password?.message} required>
+              <FormField label={t('login.password')} error={errors.password?.message} required>
                 <PasswordInput {...field} autoComplete="current-password" />
               </FormField>
             )}
@@ -70,7 +74,7 @@ export default function LoginPage() {
             </Alert>
           )}
           <Button type="submit" loading={isSubmitting} fullWidth>
-            Sign in
+            {t('login.submit')}
           </Button>
         </Stack>
       </form>

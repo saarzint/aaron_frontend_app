@@ -1,0 +1,14 @@
+{
+  "pageTitle": "Users",
+  "columns": {
+    "id": "ID",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "lastActive": "Last Active"
+  },
+  "errors": {
+    "loadFailed": "Failed to load users"
+  }
+}

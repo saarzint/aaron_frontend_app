@@ -1,0 +1,13 @@
+{
+  "pageTitle": "Orders",
+  "columns": {
+    "orderId": "Order ID",
+    "customer": "Customer",
+    "status": "Status",
+    "total": "Total",
+    "date": "Date"
+  },
+  "errors": {
+    "loadFailed": "Failed to load orders"
+  }
+}

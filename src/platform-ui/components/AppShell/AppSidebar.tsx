@@ -28,6 +28,7 @@ import {
 } from '@tabler/icons-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type {
   NavigationConfig,
   NavigationGroup,
@@ -66,6 +67,8 @@ export default function AppSidebar({
   const { tenant } = useTenantContext();
   const { user, role, logout } = useAuth();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { t } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
   const isDark = colorScheme === 'dark';
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
@@ -101,35 +104,29 @@ export default function AppSidebar({
     return (
       <Stack h="100%" gap={0} align="center" style={{ overflow: 'hidden' }}>
         {/* 60px brand zone — matches header height exactly */}
-        <Box
-          style={{
-            height: 60,
-            flexShrink: 0,
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-          }}
+        <Group
+          justify="center"
+          align="center"
+          gap={6}
+          style={{ height: 60, flexShrink: 0, width: '100%' }}
         >
           <Tooltip label={brandName} position="right" withArrow>
-            <Avatar size={32} radius="md" color="brand" style={{ cursor: 'default' }}>
+            <Avatar size={28} radius="md" color="brand" style={{ cursor: 'default' }}>
               {brandInitial}
             </Avatar>
           </Tooltip>
-          <Tooltip label="Expand sidebar" position="right" withArrow>
+          <Tooltip label={t('expandSidebar')} position="right" withArrow>
             <ActionIcon
               onClick={onToggle}
               variant="subtle"
               color="gray"
               size="xs"
-              aria-label="Expand sidebar"
-              style={{ position: 'absolute', top: 8, right: 8 }}
+              aria-label={t('expandSidebar')}
             >
               <IconLayoutSidebarLeftExpand size={14} />
             </ActionIcon>
           </Tooltip>
-        </Box>
+        </Group>
 
         <Divider w="100%" mb="sm" />
 
@@ -138,8 +135,9 @@ export default function AppSidebar({
           {allSectionItems.map((item) => {
             const Icon = NAV_ICONS[item.id];
             const active = isItemActive(item.to);
+            const label = t(item.id, { defaultValue: item.label });
             return (
-              <Tooltip key={item.id} label={item.label} position="right" withArrow>
+              <Tooltip key={item.id} label={label} position="right" withArrow>
                 <ActionIcon
                   component={Link}
                   to={item.to ?? '#'}
@@ -147,7 +145,7 @@ export default function AppSidebar({
                   color={active ? 'brand' : 'gray'}
                   size="lg"
                   radius="md"
-                  aria-label={item.label}
+                  aria-label={label}
                 >
                   {Icon && <Icon size={18} />}
                 </ActionIcon>
@@ -158,7 +156,11 @@ export default function AppSidebar({
 
         {/* Bottom: dark mode, user, logout */}
         <Stack gap={6} align="center">
-          <Tooltip label={isDark ? 'Light mode' : 'Dark mode'} position="right" withArrow>
+          <Tooltip
+            label={isDark ? tCommon('theme.lightMode') : tCommon('theme.darkMode')}
+            position="right"
+            withArrow
+          >
             <ActionIcon
               onClick={toggleColorScheme}
               variant="subtle"
@@ -179,14 +181,14 @@ export default function AppSidebar({
             </Avatar>
           </Tooltip>
 
-          <Tooltip label="Log out" position="right" withArrow>
+          <Tooltip label={t('logout')} position="right" withArrow>
             <ActionIcon
               onClick={handleLogout}
               variant="subtle"
               color="red"
               size="lg"
               radius="md"
-              aria-label="Log out"
+              aria-label={t('logout')}
             >
               <IconLogout size={18} />
             </ActionIcon>
@@ -218,13 +220,13 @@ export default function AppSidebar({
               {brandName}
             </Text>
           </Group>
-          <Tooltip label="Collapse sidebar" position="right" withArrow>
+          <Tooltip label={t('collapseSidebar')} position="right" withArrow>
             <ActionIcon
               onClick={onToggle}
               variant="subtle"
               color="gray"
               size="sm"
-              aria-label="Collapse sidebar"
+              aria-label={t('collapseSidebar')}
               style={{ flexShrink: 0 }}
             >
               <IconLayoutSidebarLeftCollapse size={16} />
@@ -258,7 +260,7 @@ export default function AppSidebar({
 
       <Divider />
 
-      {/* User profile — no arrow */}
+      {/* User profile */}
       <Box px="md" py="sm" style={{ flexShrink: 0 }}>
         <Group gap="sm" wrap="nowrap">
           <Avatar size={32} radius="xl" color="brand" style={{ flexShrink: 0 }}>
@@ -278,7 +280,7 @@ export default function AppSidebar({
       {/* Logout */}
       <Box px="sm" pb="sm" style={{ flexShrink: 0 }}>
         <NavLink
-          label="Log out"
+          label={t('logout')}
           leftSection={<IconLogout size={16} stroke={1.5} />}
           onClick={handleLogout}
           component="button"
@@ -311,6 +313,8 @@ interface DarkModeToggleItemProps {
 }
 
 function DarkModeToggleItem({ isDark, onToggle }: DarkModeToggleItemProps) {
+  const { t } = useTranslation('common');
+
   return (
     <Group
       justify="space-between"
@@ -332,13 +336,13 @@ function DarkModeToggleItem({ isDark, onToggle }: DarkModeToggleItemProps) {
         >
           {isDark ? <IconSun size={16} stroke={1.5} /> : <IconMoon size={16} stroke={1.5} />}
         </Box>
-        <Text size="sm">Dark mode</Text>
+        <Text size="sm">{t('theme.darkMode')}</Text>
       </Group>
       <Switch
         size="xs"
         checked={isDark}
         onChange={onToggle}
-        aria-label="Toggle dark mode"
+        aria-label={t('theme.darkMode')}
         onClick={(e) => e.stopPropagation()}
       />
     </Group>
@@ -364,13 +368,16 @@ function SidebarSection({
   onNavigate,
   extraContent,
 }: SidebarSectionProps) {
+  const { t } = useTranslation('navigation');
+  const sectionLabel = t(`sections.${section.id}`, { defaultValue: section.label });
+
   return (
     <Box mb="xs">
       {section.label && (
         <UnstyledButton onClick={onToggle} w="100%" mb={4}>
           <Group justify="space-between" align="center" px={4} py={2} wrap="nowrap">
             <Text size="xs" fw={600} c="dimmed" tt="uppercase" style={{ letterSpacing: '0.05em' }}>
-              {section.label}
+              {sectionLabel}
             </Text>
             <IconChevronDown
               size={12}
@@ -411,17 +418,19 @@ interface FullNavItemProps {
 }
 
 function FullNavItem({ item, isActive, onNavigate }: FullNavItemProps) {
+  const { t } = useTranslation('navigation');
   const Icon = NAV_ICONS[item.id];
+  const label = t(item.id, { defaultValue: item.label });
 
   return (
     <NavLink
-      label={item.label}
+      label={label}
       leftSection={Icon ? <Icon size={16} stroke={1.5} /> : undefined}
       component={Link}
       to={item.to ?? '#'}
       onClick={onNavigate}
       active={isActive}
-      title={item.label}
+      title={label}
       styles={(theme) => ({
         root: {
           borderRadius: theme.radius.md,

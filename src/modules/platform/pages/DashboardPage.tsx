@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Grid, Group, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Box, Button, Grid, Group, SimpleGrid, Stack, Text } from '@mantine/core';
+import { IconDownload } from '@tabler/icons-react';
 import { BarChart, DonutChart } from '@mantine/charts';
 import { Navigate } from 'react-router-dom';
 import {
@@ -16,6 +18,9 @@ import Card from '@platform-ui/primitives/Card';
 import { getOrders } from '@core/api/services/orderService';
 import { useAuth } from '@core/auth/useAuth';
 import { useTenantQueryKeys } from '@config/queryConfig';
+import { useFormatters } from '@core/formatting/useFormatters';
+import FeatureFlag from '@core/featureFlags/FeatureFlag';
+import { useToast } from '@core/toast/useToast';
 import {
   mockCustomers,
   mockProductSales,
@@ -39,6 +44,7 @@ interface StatCardProps {
 }
 
 function StatCard({ label, value, trend, positive, icon: Icon, iconBg, iconColor }: StatCardProps) {
+  const { t } = useTranslation('common');
   const TrendIcon = positive ? IconTrendingUp : IconTrendingDown;
   const trendColor = positive ? 'var(--mantine-color-success-6)' : 'var(--mantine-color-danger-6)';
 
@@ -85,7 +91,7 @@ function StatCard({ label, value, trend, positive, icon: Icon, iconBg, iconColor
             {trend}
           </Text>
           <Text size="xs" c="dimmed">
-            vs last period
+            {t('labels.vsPeriod')}
           </Text>
         </Group>
       </Stack>
@@ -138,8 +144,12 @@ function CategoryLegend() {
 
 export default function DashboardPage() {
   const { role } = useAuth();
+  const { t } = useTranslation('dashboard');
+  const { t: tNav } = useTranslation('navigation');
   const tenantQueryKeys = useTenantQueryKeys();
+  const fmt = useFormatters();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
+  const { success: toastSuccess } = useToast();
 
   const ordersQuery = useQuery({
     queryKey: tenantQueryKeys.orders(),
@@ -156,8 +166,8 @@ export default function DashboardPage() {
   const completedCount = orders.filter((o) => o.status === 'completed').length;
 
   const customerStat: StatCardProps = {
-    label: 'Total Customers',
-    value: mockCustomers.length.toLocaleString(),
+    label: t('stats.totalCustomers'),
+    value: fmt.number(mockCustomers.length),
     trend: '+2.5%',
     positive: true,
     icon: IconUsers,
@@ -166,8 +176,8 @@ export default function DashboardPage() {
   };
 
   const revenueStat: StatCardProps = {
-    label: 'Total Revenue',
-    value: `$${totalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+    label: t('stats.totalRevenue'),
+    value: fmt.currency(totalRevenue),
     trend: '+0.5%',
     positive: true,
     icon: IconCurrencyDollar,
@@ -176,8 +186,8 @@ export default function DashboardPage() {
   };
 
   const ordersStat: StatCardProps = {
-    label: 'Total Orders',
-    value: orders.length.toLocaleString(),
+    label: t('stats.totalOrders'),
+    value: fmt.number(orders.length),
     trend: '-0.2%',
     positive: false,
     icon: IconShoppingCart,
@@ -186,8 +196,8 @@ export default function DashboardPage() {
   };
 
   const returnsStat: StatCardProps = {
-    label: 'Total Returns',
-    value: pendingCount,
+    label: t('stats.totalReturns'),
+    value: fmt.number(pendingCount),
     trend: pendingCount <= completedCount ? '+0.12%' : '-0.12%',
     positive: pendingCount <= completedCount,
     icon: IconArrowBack,
@@ -211,8 +221,22 @@ export default function DashboardPage() {
   const bothBottomVisible = widgets.categoryChart && widgets.countryChart;
 
   return (
-    <AppShell title={config.title} pageTitle="Dashboard" navigation={config.navigation}>
+    <AppShell title={config.title} pageTitle={tNav('dashboard')} navigation={config.navigation}>
       <Stack gap="lg">
+        {/* ── Header row with optional export ── */}
+        <FeatureFlag flag="exportData">
+          <Group justify="flex-end">
+            <Button
+              size="xs"
+              variant="light"
+              leftSection={<IconDownload size={14} />}
+              onClick={() => toastSuccess('Export started', t('charts.productSales'))}
+            >
+              {t('common:actions.export', 'Export')}
+            </Button>
+          </Group>
+        </FeatureFlag>
+
         {/* ── Stat cards ── */}
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
           {stats.map((s) => (
@@ -225,15 +249,15 @@ export default function DashboardPage() {
           <Card p="lg" style={cardStyle}>
             <Stack gap="md">
               <Text fw={600} size="md">
-                Product sales
+                {t('charts.productSales')}
               </Text>
               <BarChart
                 h={260}
                 data={mockProductSales}
                 dataKey="date"
                 series={[
-                  { name: 'Gross margin', color: 'blue.5' },
-                  { name: 'Revenue', color: 'orange.4' },
+                  { name: t('charts.grossMargin'), color: 'blue.5' },
+                  { name: t('charts.revenue'), color: 'orange.4' },
                 ]}
                 tickLine="none"
                 gridAxis="y"
@@ -259,7 +283,7 @@ export default function DashboardPage() {
                 <Card p="lg" style={{ ...cardStyle, height: '100%' }}>
                   <Stack gap="lg">
                     <Text fw={600} size="md">
-                      Sales by product category
+                      {t('charts.salesByCategory')}
                     </Text>
                     <Group gap="xl" align="center" wrap="nowrap">
                       <Box style={{ flexShrink: 0 }}>
@@ -283,7 +307,7 @@ export default function DashboardPage() {
                 <Card p="lg" style={{ ...cardStyle, height: '100%' }}>
                   <Stack gap="lg">
                     <Text fw={600} size="md">
-                      Sales by countries
+                      {t('charts.salesByCountry')}
                     </Text>
                     <Stack gap={10}>
                       {mockCountrySales.map((item, idx) => (

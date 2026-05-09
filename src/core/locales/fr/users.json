@@ -1,0 +1,14 @@
+{
+  "pageTitle": "Utilisateurs",
+  "columns": {
+    "id": "ID",
+    "name": "Nom",
+    "email": "E-mail",
+    "role": "Rôle",
+    "status": "Statut",
+    "lastActive": "Dernière activité"
+  },
+  "errors": {
+    "loadFailed": "Échec du chargement des utilisateurs"
+  }
+}

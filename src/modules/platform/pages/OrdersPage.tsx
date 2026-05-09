@@ -1,4 +1,5 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Stack } from '@mantine/core';
 import { type ColumnDef } from '@tanstack/react-table';
@@ -11,39 +12,51 @@ import ErrorState from '@platform-ui/feedback/ErrorState';
 import { getOrders, type Order } from '@core/api/services/orderService';
 import { useAuth } from '@core/auth/useAuth';
 import { useTenantQueryKeys } from '@config/queryConfig';
+import { useFormatters } from '@core/formatting/useFormatters';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 
-const orderColumns: ColumnDef<Order>[] = [
-  { accessorKey: 'id', header: 'Order ID' },
-  { accessorKey: 'customer', header: 'Customer' },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ getValue }) => {
-      const status = String(getValue());
-      const variant =
-        status === 'completed'
-          ? 'success'
-          : status === 'pending'
-            ? 'warning'
-            : status === 'processing'
-              ? 'primary'
-              : 'danger';
-      return <Badge variant={variant}>{status}</Badge>;
-    },
-  },
-  {
-    accessorKey: 'total',
-    header: 'Total',
-    cell: ({ getValue }) => `$${Number(getValue()).toFixed(2)}`,
-  },
-  { accessorKey: 'createdAt', header: 'Date' },
-];
+function useOrderColumns(): ColumnDef<Order>[] {
+  const { t } = useTranslation('orders');
+  const fmt = useFormatters();
+
+  return useMemo(
+    () => [
+      { accessorKey: 'id', header: t('columns.orderId') },
+      { accessorKey: 'customer', header: t('columns.customer') },
+      {
+        accessorKey: 'status',
+        header: t('columns.status'),
+        cell: ({ getValue }) => {
+          const status = String(getValue());
+          const variant =
+            status === 'completed'
+              ? 'success'
+              : status === 'pending'
+                ? 'warning'
+                : status === 'processing'
+                  ? 'primary'
+                  : 'danger';
+          return <Badge variant={variant}>{status}</Badge>;
+        },
+      },
+      {
+        accessorKey: 'total',
+        header: t('columns.total'),
+        cell: ({ getValue }) => fmt.currency(Number(getValue())),
+      },
+      { accessorKey: 'createdAt', header: t('columns.date') },
+    ],
+    [t, fmt]
+  );
+}
 
 export default function OrdersPage() {
   const { role } = useAuth();
+  const { t } = useTranslation('orders');
+  const { t: tNav } = useTranslation('navigation');
   const tenantQueryKeys = useTenantQueryKeys();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
+  const columns = useOrderColumns();
 
   const ordersQuery = useQuery({
     queryKey: tenantQueryKeys.orders(),
@@ -53,11 +66,11 @@ export default function OrdersPage() {
   if (!config) return <Navigate to="/login" replace />;
 
   return (
-    <AppShell title={config.title} pageTitle="Orders" navigation={config.navigation}>
+    <AppShell title={config.title} pageTitle={tNav('orders')} navigation={config.navigation}>
       <Stack gap="md">
         {ordersQuery.isError && (
           <ErrorState
-            title="Failed to load orders"
+            title={t('errors.loadFailed')}
             message={(ordersQuery.error as { message?: string })?.message ?? 'Unknown error'}
           />
         )}
@@ -68,11 +81,7 @@ export default function OrdersPage() {
             boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
           }}
         >
-          <DataTable
-            columns={orderColumns}
-            data={ordersQuery.data}
-            isLoading={ordersQuery.isLoading}
-          />
+          <DataTable columns={columns} data={ordersQuery.data} isLoading={ordersQuery.isLoading} />
         </Card>
       </Stack>
     </AppShell>

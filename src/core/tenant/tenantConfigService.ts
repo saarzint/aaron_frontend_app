@@ -27,6 +27,9 @@ const MOCK_TENANT_CONFIGS: Record<string, LoadedTenantConfig> = {
         advancedReporting: false,
         customBranding: false,
         sso: false,
+        exportData: false,
+        notificationsPanel: true,
+        experimentalWidgets: false,
       },
       localeDefaults: {
         language: 'en',
@@ -45,6 +48,9 @@ const MOCK_TENANT_CONFIGS: Record<string, LoadedTenantConfig> = {
         advancedReporting: true,
         customBranding: true,
         sso: true,
+        exportData: true,
+        notificationsPanel: true,
+        experimentalWidgets: true,
       },
       localeDefaults: {
         language: 'en',
@@ -65,6 +71,9 @@ const MOCK_TENANT_CONFIGS: Record<string, LoadedTenantConfig> = {
         advancedReporting: true,
         customBranding: false,
         sso: true,
+        exportData: true,
+        notificationsPanel: false,
+        experimentalWidgets: false,
       },
       localeDefaults: {
         language: 'en',

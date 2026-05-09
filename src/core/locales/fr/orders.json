@@ -1,0 +1,13 @@
+{
+  "pageTitle": "Commandes",
+  "columns": {
+    "orderId": "N° commande",
+    "customer": "Client",
+    "status": "Statut",
+    "total": "Total",
+    "date": "Date"
+  },
+  "errors": {
+    "loadFailed": "Échec du chargement des commandes"
+  }
+}
