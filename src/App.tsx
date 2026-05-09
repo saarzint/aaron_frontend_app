@@ -1,10 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PrivateRoute from '@app/routing/PrivateRoute';
 import LoginPage from '@modules/auth/pages/LoginPage';
+import DashboardPage from '@modules/platform/pages/DashboardPage';
+import OrdersPage from '@modules/platform/pages/OrdersPage';
 import CustomersPage from '@modules/platform/pages/CustomersPage';
-import RoleDashboard from '@modules/platform/pages/RoleDashboard';
-import SettingsPage from '@modules/platform/pages/SettingsPage';
 import UsersPage from '@modules/platform/pages/UsersPage';
+import SettingsPage from '@modules/platform/pages/SettingsPage';
 
 function App() {
   return (
@@ -12,23 +13,31 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route
-          path="/dashboard/admin"
+          path="/dashboard"
           element={
-            <PrivateRoute allowedRoles={['super_admin']}>
-              <RoleDashboard />
+            <PrivateRoute allowedRoles={['super_admin', 'org_admin', 'user']}>
+              <DashboardPage />
             </PrivateRoute>
           }
         />
         <Route
-          path="/dashboard/admin/customers"
+          path="/orders"
           element={
-            <PrivateRoute allowedRoles={['super_admin']}>
+            <PrivateRoute allowedRoles={['super_admin', 'org_admin', 'user']}>
+              <OrdersPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/customers"
+          element={
+            <PrivateRoute allowedRoles={['super_admin', 'org_admin']}>
               <CustomersPage />
             </PrivateRoute>
           }
         />
         <Route
-          path="/dashboard/admin/users"
+          path="/users"
           element={
             <PrivateRoute allowedRoles={['super_admin']}>
               <UsersPage />
@@ -36,47 +45,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/admin/settings"
-          element={
-            <PrivateRoute allowedRoles={['super_admin']}>
-              <SettingsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard/org"
-          element={
-            <PrivateRoute allowedRoles={['super_admin', 'org_admin']}>
-              <RoleDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard/org/customers"
-          element={
-            <PrivateRoute allowedRoles={['super_admin', 'org_admin']}>
-              <CustomersPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard/org/settings"
-          element={
-            <PrivateRoute allowedRoles={['super_admin', 'org_admin']}>
-              <SettingsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard/user"
-          element={
-            <PrivateRoute allowedRoles={['super_admin', 'org_admin', 'user']}>
-              <RoleDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard/user/settings"
+          path="/settings"
           element={
             <PrivateRoute allowedRoles={['super_admin', 'org_admin', 'user']}>
               <SettingsPage />

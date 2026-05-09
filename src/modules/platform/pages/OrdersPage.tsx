@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Stack } from '@mantine/core';
 import { type ColumnDef } from '@tanstack/react-table';
@@ -6,7 +6,6 @@ import { Navigate } from 'react-router-dom';
 import AppShell from '@platform-ui/components/AppShell/AppShell';
 import DataTable from '@platform-ui/components/DataTable/DataTable';
 import Card from '@platform-ui/primitives/Card';
-import Typography from '@platform-ui/primitives/Typography';
 import Badge from '@platform-ui/primitives/Badge';
 import ErrorState from '@platform-ui/feedback/ErrorState';
 import { getOrders, type Order } from '@core/api/services/orderService';
@@ -15,7 +14,7 @@ import { useTenantQueryKeys } from '@config/queryConfig';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 
 const orderColumns: ColumnDef<Order>[] = [
-  { accessorKey: 'id', header: 'ID' },
+  { accessorKey: 'id', header: 'Order ID' },
   { accessorKey: 'customer', header: 'Customer' },
   {
     accessorKey: 'status',
@@ -38,10 +37,10 @@ const orderColumns: ColumnDef<Order>[] = [
     header: 'Total',
     cell: ({ getValue }) => `$${Number(getValue()).toFixed(2)}`,
   },
-  { accessorKey: 'createdAt', header: 'Created' },
+  { accessorKey: 'createdAt', header: 'Date' },
 ];
 
-export default function RoleDashboard() {
+export default function OrdersPage() {
   const { role } = useAuth();
   const tenantQueryKeys = useTenantQueryKeys();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
@@ -56,14 +55,19 @@ export default function RoleDashboard() {
   return (
     <AppShell title={config.title} pageTitle="Orders" navigation={config.navigation}>
       <Stack gap="md">
-        <Typography variant="heading">Orders</Typography>
         {ordersQuery.isError && (
           <ErrorState
             title="Failed to load orders"
             message={(ordersQuery.error as { message?: string })?.message ?? 'Unknown error'}
           />
         )}
-        <Card p="md">
+        <Card
+          p="lg"
+          style={{
+            border: '1px solid var(--mantine-color-default-border)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          }}
+        >
           <DataTable
             columns={orderColumns}
             data={ordersQuery.data}

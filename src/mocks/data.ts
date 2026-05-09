@@ -119,3 +119,94 @@ export const mockUsers: UserMock[] = [
     lastActive: '3 days ago',
   },
 ];
+
+export interface ProductSaleMock {
+  date: string;
+  'Gross margin': number;
+  Revenue: number;
+}
+
+export const mockProductSales: ProductSaleMock[] = [
+  { date: '1 Jul', 'Gross margin': 28000, Revenue: 38000 },
+  { date: '2 Jul', 'Gross margin': 32000, Revenue: 54000 },
+  { date: '3 Jul', 'Gross margin': 22000, Revenue: 55000 },
+  { date: '4 Jul', 'Gross margin': 38000, Revenue: 48000 },
+  { date: '5 Jul', 'Gross margin': 48000, Revenue: 33000 },
+  { date: '6 Jul', 'Gross margin': 52000, Revenue: 40000 },
+  { date: '7 Jul', 'Gross margin': 36000, Revenue: 62000 },
+  { date: '8 Jul', 'Gross margin': 30000, Revenue: 44000 },
+  { date: '9 Jul', 'Gross margin': 38000, Revenue: 42000 },
+  { date: '10 Jul', 'Gross margin': 36000, Revenue: 50000 },
+  { date: '11 Jul', 'Gross margin': 42000, Revenue: 48000 },
+  { date: '12 Jul', 'Gross margin': 47000, Revenue: 66000 },
+];
+
+export interface CategorySaleMock {
+  name: string;
+  value: number;
+  color: string;
+}
+
+export const mockCategorySales: CategorySaleMock[] = [
+  { name: 'Living room', value: 25, color: 'violet.5' },
+  { name: 'Kids', value: 17, color: 'blue.5' },
+  { name: 'Office', value: 13, color: 'teal.5' },
+  { name: 'Bedroom', value: 12, color: 'cyan.5' },
+  { name: 'Kitchen', value: 9, color: 'green.5' },
+  { name: 'Bathroom', value: 8, color: 'pink.5' },
+  { name: 'Dining room', value: 6, color: 'red.5' },
+  { name: 'Decor', value: 5, color: 'orange.4' },
+  { name: 'Lighting', value: 3, color: 'yellow.5' },
+  { name: 'Outdoor', value: 2, color: 'lime.5' },
+];
+
+export interface CountrySaleMock {
+  country: string;
+  value: number;
+}
+
+export const mockCountrySales: CountrySaleMock[] = [
+  { country: 'Poland', value: 19 },
+  { country: 'Austria', value: 15 },
+  { country: 'Spain', value: 13 },
+  { country: 'Romania', value: 12 },
+  { country: 'France', value: 11 },
+  { country: 'Italy', value: 11 },
+  { country: 'Germany', value: 10 },
+  { country: 'Ukraine', value: 9 },
+];
+
+export const mockCountryDotColors: string[] = [
+  '#4263eb',
+  '#1971c2',
+  '#f03e3e',
+  '#2f9e44',
+  '#f08c00',
+  '#862e9c',
+  '#0c8599',
+  '#74c0fc',
+];
+
+export interface SettingRowMock {
+  title: string;
+  description: string;
+  enabled: boolean;
+}
+
+export const mockSettingRows: SettingRowMock[] = [
+  {
+    title: 'Email notifications',
+    description: 'Receive alerts for orders, users, and account activity.',
+    enabled: true,
+  },
+  {
+    title: 'Compact navigation',
+    description: 'Keep the sidebar collapsed by default on large screens.',
+    enabled: false,
+  },
+  {
+    title: 'Experimental features',
+    description: 'Allow early access to tenant-specific beta features.',
+    enabled: false,
+  },
+];
