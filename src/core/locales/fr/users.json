@@ -10,5 +10,37 @@
   },
   "errors": {
     "loadFailed": "Échec du chargement des utilisateurs"
+  },
+  "form": {
+    "addTitle": "Ajouter un utilisateur",
+    "editTitle": "Modifier l'utilisateur",
+    "addButton": "Ajouter un utilisateur",
+    "sections": {
+      "identity": "Identité",
+      "access": "Accès et permissions"
+    },
+    "adminNote": "Note admin",
+    "adminNotePlaceholder": "Notes visibles par les admins uniquement...",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "created": "Utilisateur créé",
+    "updated": "Utilisateur mis à jour",
+    "errors": {
+      "nameRequired": "Le nom est requis",
+      "emailRequired": "L'e-mail est requis",
+      "emailInvalid": "Adresse e-mail invalide",
+      "roleRequired": "Le rôle est requis",
+      "statusRequired": "Le statut est requis"
+    },
+    "roles": {
+      "user": "Utilisateur",
+      "org_admin": "Admin org",
+      "super_admin": "Super admin"
+    },
+    "statuses": {
+      "active": "Actif",
+      "invited": "Invité",
+      "suspended": "Suspendu"
+    }
   }
 }

@@ -1,16 +1,21 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate } from 'react-router-dom';
-import { Stack } from '@mantine/core';
+import { Group, Stack } from '@mantine/core';
+import { useQueryClient } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
-import { IconDownload } from '@tabler/icons-react';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
+import apiClient from '@core/api/apiClient';
+import { useTenantQueryClient } from '@config/queryConfig';
 import AppShell from '@platform-ui/components/AppShell/AppShell';
 import Card from '@platform-ui/primitives/Card';
 import Badge from '@platform-ui/primitives/Badge';
+import Button from '@platform-ui/primitives/Button';
 import { ServerTable, useServerTable, type BulkAction } from '@platform-ui/table';
 import { getCustomersTable, type CustomerMock } from '@core/api/services/customerService';
 import { useAuth } from '@core/auth/useAuth';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
+import CustomerFormModal from '../components/CustomerFormModal';
 
 function useCustomerColumns(): ColumnDef<CustomerMock, unknown>[] {
   const { t } = useTranslation('customers');
@@ -36,24 +41,31 @@ function useCustomerColumns(): ColumnDef<CustomerMock, unknown>[] {
   );
 }
 
-const bulkActions: BulkAction<CustomerMock>[] = [
-  {
-    label: 'Export selected',
-    icon: <IconDownload size={14} />,
-    onClick: (rows) => {
-      console.warn(
-        'Export customers:',
-        rows.map((r) => r.id)
-      );
-    },
-  },
-];
-
 export default function CustomersPage() {
   const { role } = useAuth();
+  const { t } = useTranslation('customers');
   const { t: tNav } = useTranslation('navigation');
+  const queryClient = useQueryClient();
+  const { invalidateTenantQueries } = useTenantQueryClient();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
   const columns = useCustomerColumns();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const bulkActions: BulkAction<CustomerMock>[] = [
+    {
+      label: 'Delete selected',
+      variant: 'danger',
+      icon: <IconTrash size={14} />,
+      onClick: async (rows) => {
+        await Promise.all(rows.map((row) => apiClient.delete(`/customers/${row.id}`)));
+        await queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) && query.queryKey.includes('customers'),
+        });
+        await invalidateTenantQueries(['customers']);
+      },
+    },
+  ];
 
   const tableInstance = useServerTable<CustomerMock>({
     queryKey: ['customers'],
@@ -69,6 +81,12 @@ export default function CustomersPage() {
   return (
     <AppShell title={config.title} pageTitle={tNav('customers')} navigation={config.navigation}>
       <Stack gap="md">
+        <Group justify="flex-end">
+          <Button onClick={() => setModalOpen(true)} variant="primary">
+            <IconPlus size={16} style={{ marginRight: 6 }} />
+            {t('form.addButton')}
+          </Button>
+        </Group>
         <Card p="lg">
           <ServerTable
             instance={tableInstance}
@@ -77,6 +95,7 @@ export default function CustomersPage() {
           />
         </Card>
       </Stack>
+      <CustomerFormModal opened={modalOpen} onClose={() => setModalOpen(false)} />
     </AppShell>
   );
 }

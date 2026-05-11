@@ -1,13 +1,19 @@
-import { Controller, useForm } from 'react-hook-form';
+import { useMemo } from 'react';
+import { z } from 'zod';
+import { Alert, Stack } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Alert, PasswordInput, Stack } from '@mantine/core';
 import { useAuth } from '@core/auth/useAuth';
+import { toast } from '@core/toast/toast';
 import AuthLayout from '@platform-ui/layouts/AuthLayout';
 import Button from '@platform-ui/primitives/Button';
-import FormField from '@platform-ui/primitives/FormField';
-import Input from '@platform-ui/primitives/Input';
-import { toast } from '@core/toast/toast';
+import {
+  useAppForm,
+  Form,
+  ControlledTextInput,
+  ControlledPassword,
+  emailField,
+} from '@platform-ui/forms';
 
 interface LoginForm {
   email: string;
@@ -24,14 +30,28 @@ export default function LoginPage() {
   const { loginUser } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation('auth');
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<LoginForm>({
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        email: emailField(
+          t('login.errors.emailRequired'),
+          t('login.errors.emailInvalid', 'Invalid email address')
+        ),
+        password: z.string().min(1, t('login.errors.passwordRequired')),
+      }),
+    [t]
+  );
+
+  const form = useAppForm<LoginForm>({
+    schema,
     defaultValues: { email: '', password: '' },
   });
+
+  const {
+    formState: { errors, isSubmitting },
+    setError,
+  } = form;
 
   const onSubmit = async (data: LoginForm) => {
     try {
@@ -46,27 +66,22 @@ export default function LoginPage() {
 
   return (
     <AuthLayout title={t('login.title')} subtitle={t('login.subtitle')}>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <Form form={form} onSubmit={onSubmit}>
         <Stack gap="md">
-          <Controller
+          <ControlledTextInput
             name="email"
-            control={control}
-            rules={{ required: t('login.errors.emailRequired') }}
-            render={({ field }) => (
-              <FormField label={t('login.email')} error={errors.email?.message} required>
-                <Input {...field} type="email" autoComplete="email" />
-              </FormField>
-            )}
+            control={form.control}
+            label={t('login.email')}
+            type="email"
+            autoComplete="email"
+            required
           />
-          <Controller
+          <ControlledPassword
             name="password"
-            control={control}
-            rules={{ required: t('login.errors.passwordRequired') }}
-            render={({ field }) => (
-              <FormField label={t('login.password')} error={errors.password?.message} required>
-                <PasswordInput {...field} autoComplete="current-password" />
-              </FormField>
-            )}
+            control={form.control}
+            label={t('login.password')}
+            autoComplete="current-password"
+            required
           />
           {errors.root && (
             <Alert color="red" variant="light">
@@ -77,7 +92,7 @@ export default function LoginPage() {
             {t('login.submit')}
           </Button>
         </Stack>
-      </form>
+      </Form>
     </AuthLayout>
   );
 }

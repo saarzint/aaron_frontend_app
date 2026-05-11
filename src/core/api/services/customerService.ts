@@ -1,4 +1,5 @@
-import { mockCustomers, type CustomerMock } from '@mocks/data';
+import apiClient from '../apiClient';
+import type { CustomerMock } from '@mocks/data';
 import type { TableParams, TableResponse } from '@platform-ui/table';
 
 export type { CustomerMock };
@@ -6,7 +7,8 @@ export type { CustomerMock };
 export const getCustomersTable = async (
   params: TableParams
 ): Promise<TableResponse<CustomerMock>> => {
-  let data = [...mockCustomers];
+  const response = await apiClient.get<CustomerMock[]>('/customers');
+  let data = [...response.data];
 
   if (params.search) {
     const q = params.search.toLowerCase();

@@ -16,6 +16,16 @@
   },
   "profile": {
     "label": "Profil",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "title": "Profil",
+    "description": "Mettre à jour votre nom d'affichage et votre adresse e-mail",
+    "displayName": "Nom d'affichage",
+    "email": "Adresse e-mail",
+    "saved": "Profil enregistré",
+    "errors": {
+      "nameRequired": "Le nom d'affichage est requis",
+      "emailRequired": "L'e-mail est requis",
+      "emailInvalid": "Adresse e-mail invalide"
+    }
   }
 }
