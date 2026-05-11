@@ -3,9 +3,11 @@ import { login, logout as logoutService, type LoginCredentials, type User } from
 import { AuthContext } from './authContext';
 import {
   clearSession,
+  getEmail as getStoredEmail,
   getRole as getStoredRole,
   getToken,
   isSessionExpired,
+  setEmail as storeEmail,
   setExpiresAt,
   setRefreshToken,
   setRole as storeRole,
@@ -24,7 +26,7 @@ const initialUser = (): User | null => {
     if (isSessionExpired()) clearSession();
     return null;
   }
-  return { id: '', email: 'restored-user', role: getStoredRole() ?? undefined };
+  return { id: '', email: getStoredEmail() ?? '', role: getStoredRole() ?? undefined };
 };
 
 const initialRole = (): string | null => {
@@ -52,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRefreshToken(refreshToken);
     setExpiresAt(Date.now() + expiresIn * 1000);
     storeRole(assignedRole);
+    storeEmail(authUser.email);
     setUser({ ...authUser, role: assignedRole });
     setRole(assignedRole);
     return { role: assignedRole };

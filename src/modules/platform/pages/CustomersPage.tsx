@@ -1,20 +1,18 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
 import { Navigate } from 'react-router-dom';
-import { type ColumnDef } from '@tanstack/react-table';
 import { Stack } from '@mantine/core';
-import { useAuth } from '@core/auth/useAuth';
-import { useTenantQueryKeys } from '@config/queryConfig';
-import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
-import { mockCustomers, type CustomerMock } from '@mocks/data';
+import { type ColumnDef } from '@tanstack/react-table';
+import { IconDownload } from '@tabler/icons-react';
 import AppShell from '@platform-ui/components/AppShell/AppShell';
-import DataTable from '@platform-ui/components/DataTable/DataTable';
-import ErrorState from '@platform-ui/feedback/ErrorState';
-import Badge from '@platform-ui/primitives/Badge';
 import Card from '@platform-ui/primitives/Card';
+import Badge from '@platform-ui/primitives/Badge';
+import { ServerTable, useServerTable, type BulkAction } from '@platform-ui/table';
+import { getCustomersTable, type CustomerMock } from '@core/api/services/customerService';
+import { useAuth } from '@core/auth/useAuth';
+import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 
-function useCustomerColumns(): ColumnDef<CustomerMock>[] {
+function useCustomerColumns(): ColumnDef<CustomerMock, unknown>[] {
   const { t } = useTranslation('customers');
 
   return useMemo(
@@ -38,17 +36,32 @@ function useCustomerColumns(): ColumnDef<CustomerMock>[] {
   );
 }
 
+const bulkActions: BulkAction<CustomerMock>[] = [
+  {
+    label: 'Export selected',
+    icon: <IconDownload size={14} />,
+    onClick: (rows) => {
+      console.warn(
+        'Export customers:',
+        rows.map((r) => r.id)
+      );
+    },
+  },
+];
+
 export default function CustomersPage() {
   const { role } = useAuth();
-  const { t } = useTranslation('customers');
   const { t: tNav } = useTranslation('navigation');
-  const tenantQueryKeys = useTenantQueryKeys();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
   const columns = useCustomerColumns();
 
-  const customersQuery = useQuery({
-    queryKey: tenantQueryKeys.custom(['customers']),
-    queryFn: async () => mockCustomers,
+  const tableInstance = useServerTable<CustomerMock>({
+    queryKey: ['customers'],
+    queryFn: getCustomersTable,
+    columns,
+    defaultPageSize: 10,
+    savedViewKey: 'customers',
+    filename: 'customers-export.csv',
   });
 
   if (!config) return <Navigate to="/login" replace />;
@@ -56,23 +69,11 @@ export default function CustomersPage() {
   return (
     <AppShell title={config.title} pageTitle={tNav('customers')} navigation={config.navigation}>
       <Stack gap="md">
-        {customersQuery.isError && (
-          <ErrorState
-            title={t('errors.loadFailed')}
-            message={(customersQuery.error as { message?: string })?.message ?? 'Unknown error'}
-          />
-        )}
-        <Card
-          p="lg"
-          style={{
-            border: '1px solid var(--mantine-color-default-border)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-          }}
-        >
-          <DataTable
-            columns={columns}
-            data={customersQuery.data}
-            isLoading={customersQuery.isLoading}
+        <Card p="lg">
+          <ServerTable
+            instance={tableInstance}
+            bulkActions={bulkActions}
+            emptyMessage="No customers found. Try adjusting your search or filters."
           />
         </Card>
       </Stack>

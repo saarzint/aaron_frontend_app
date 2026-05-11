@@ -1,21 +1,19 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
+import { Navigate } from 'react-router-dom';
 import { Stack } from '@mantine/core';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Navigate } from 'react-router-dom';
+import { IconTrash } from '@tabler/icons-react';
 import AppShell from '@platform-ui/components/AppShell/AppShell';
-import DataTable from '@platform-ui/components/DataTable/DataTable';
 import Card from '@platform-ui/primitives/Card';
 import Badge from '@platform-ui/primitives/Badge';
-import ErrorState from '@platform-ui/feedback/ErrorState';
-import { getOrders, type Order } from '@core/api/services/orderService';
+import { ServerTable, useServerTable, type BulkAction } from '@platform-ui/table';
+import { getOrdersTable, type Order } from '@core/api/services/orderService';
 import { useAuth } from '@core/auth/useAuth';
-import { useTenantQueryKeys } from '@config/queryConfig';
 import { useFormatters } from '@core/formatting/useFormatters';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 
-function useOrderColumns(): ColumnDef<Order>[] {
+function useOrderColumns(): ColumnDef<Order, unknown>[] {
   const { t } = useTranslation('orders');
   const fmt = useFormatters();
 
@@ -50,17 +48,34 @@ function useOrderColumns(): ColumnDef<Order>[] {
   );
 }
 
+const bulkActions: BulkAction<Order>[] = [
+  {
+    label: 'Delete selected',
+    variant: 'danger',
+    icon: <IconTrash size={14} />,
+    onClick: (rows) => {
+      // Placeholder: wire to real delete mutation
+      console.warn(
+        'Delete orders:',
+        rows.map((r) => r.id)
+      );
+    },
+  },
+];
+
 export default function OrdersPage() {
   const { role } = useAuth();
-  const { t } = useTranslation('orders');
   const { t: tNav } = useTranslation('navigation');
-  const tenantQueryKeys = useTenantQueryKeys();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
   const columns = useOrderColumns();
 
-  const ordersQuery = useQuery({
-    queryKey: tenantQueryKeys.orders(),
-    queryFn: getOrders,
+  const tableInstance = useServerTable<Order>({
+    queryKey: ['orders'],
+    queryFn: getOrdersTable,
+    columns,
+    defaultPageSize: 10,
+    savedViewKey: 'orders',
+    filename: 'orders-export.csv',
   });
 
   if (!config) return <Navigate to="/login" replace />;
@@ -68,20 +83,12 @@ export default function OrdersPage() {
   return (
     <AppShell title={config.title} pageTitle={tNav('orders')} navigation={config.navigation}>
       <Stack gap="md">
-        {ordersQuery.isError && (
-          <ErrorState
-            title={t('errors.loadFailed')}
-            message={(ordersQuery.error as { message?: string })?.message ?? 'Unknown error'}
+        <Card p="lg">
+          <ServerTable
+            instance={tableInstance}
+            bulkActions={bulkActions}
+            emptyMessage="No orders found. Try adjusting your search or filters."
           />
-        )}
-        <Card
-          p="lg"
-          style={{
-            border: '1px solid var(--mantine-color-default-border)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-          }}
-        >
-          <DataTable columns={columns} data={ordersQuery.data} isLoading={ordersQuery.isLoading} />
         </Card>
       </Stack>
     </AppShell>
