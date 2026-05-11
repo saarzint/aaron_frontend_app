@@ -9,5 +9,35 @@
   },
   "errors": {
     "loadFailed": "Échec du chargement des clients"
+  },
+  "form": {
+    "addTitle": "Ajouter un client",
+    "editTitle": "Modifier le client",
+    "addButton": "Ajouter un client",
+    "sections": {
+      "details": "Détails du client",
+      "contact": "Informations de contact"
+    },
+    "phone": "Téléphone",
+    "notes": "Notes",
+    "notesPlaceholder": "Notes internes...",
+    "canContact": "Peut être contacté pour des promotions",
+    "companySearch": "Rechercher des sociétés...",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "created": "Client créé",
+    "updated": "Client mis à jour",
+    "errors": {
+      "nameRequired": "Le nom est requis",
+      "emailRequired": "L'e-mail est requis",
+      "emailInvalid": "Adresse e-mail invalide",
+      "companyRequired": "La société est requise",
+      "statusRequired": "Le statut est requis"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "pending": "En attente"
+    }
   }
 }

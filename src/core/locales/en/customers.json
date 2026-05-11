@@ -9,5 +9,35 @@
   },
   "errors": {
     "loadFailed": "Failed to load customers"
+  },
+  "form": {
+    "addTitle": "Add Customer",
+    "editTitle": "Edit Customer",
+    "addButton": "Add Customer",
+    "sections": {
+      "details": "Customer Details",
+      "contact": "Contact Info"
+    },
+    "phone": "Phone",
+    "notes": "Notes",
+    "notesPlaceholder": "Internal notes...",
+    "canContact": "Can be contacted for promotions",
+    "companySearch": "Search companies...",
+    "create": "Create",
+    "update": "Update",
+    "created": "Customer created",
+    "updated": "Customer updated",
+    "errors": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "companyRequired": "Company is required",
+      "statusRequired": "Status is required"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending"
+    }
   }
 }

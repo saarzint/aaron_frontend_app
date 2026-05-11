@@ -10,5 +10,37 @@
   },
   "errors": {
     "loadFailed": "Failed to load users"
+  },
+  "form": {
+    "addTitle": "Add User",
+    "editTitle": "Edit User",
+    "addButton": "Add User",
+    "sections": {
+      "identity": "Identity",
+      "access": "Access & Permissions"
+    },
+    "adminNote": "Admin Note",
+    "adminNotePlaceholder": "Notes visible to admins only...",
+    "create": "Create",
+    "update": "Update",
+    "created": "User created",
+    "updated": "User updated",
+    "errors": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "roleRequired": "Role is required",
+      "statusRequired": "Status is required"
+    },
+    "roles": {
+      "user": "User",
+      "org_admin": "Org Admin",
+      "super_admin": "Super Admin"
+    },
+    "statuses": {
+      "active": "Active",
+      "invited": "Invited",
+      "suspended": "Suspended"
+    }
   }
 }

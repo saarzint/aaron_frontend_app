@@ -16,6 +16,16 @@
   },
   "profile": {
     "label": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "title": "Profile",
+    "description": "Update your display name and contact email",
+    "displayName": "Display Name",
+    "email": "Email Address",
+    "saved": "Profile saved",
+    "errors": {
+      "nameRequired": "Display name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address"
+    }
   }
 }
