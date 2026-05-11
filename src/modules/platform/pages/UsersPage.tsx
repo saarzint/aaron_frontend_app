@@ -1,20 +1,18 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
 import { Navigate } from 'react-router-dom';
-import { type ColumnDef } from '@tanstack/react-table';
 import { Stack } from '@mantine/core';
-import { useAuth } from '@core/auth/useAuth';
-import { useTenantQueryKeys } from '@config/queryConfig';
-import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
-import { mockUsers, type UserMock } from '@mocks/data';
+import { type ColumnDef } from '@tanstack/react-table';
+import { IconUserOff } from '@tabler/icons-react';
 import AppShell from '@platform-ui/components/AppShell/AppShell';
-import DataTable from '@platform-ui/components/DataTable/DataTable';
-import ErrorState from '@platform-ui/feedback/ErrorState';
-import Badge from '@platform-ui/primitives/Badge';
 import Card from '@platform-ui/primitives/Card';
+import Badge from '@platform-ui/primitives/Badge';
+import { ServerTable, useServerTable, type BulkAction } from '@platform-ui/table';
+import { getUsersTable, type UserMock } from '@core/api/services/userService';
+import { useAuth } from '@core/auth/useAuth';
+import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 
-function useUserColumns(): ColumnDef<UserMock>[] {
+function useUserColumns(): ColumnDef<UserMock, unknown>[] {
   const { t } = useTranslation('users');
 
   return useMemo(
@@ -39,17 +37,34 @@ function useUserColumns(): ColumnDef<UserMock>[] {
   );
 }
 
+const bulkActions: BulkAction<UserMock>[] = [
+  {
+    label: 'Suspend selected',
+    variant: 'danger',
+    icon: <IconUserOff size={14} />,
+    onClick: (rows) => {
+      // Placeholder: wire to real suspend mutation
+      console.warn(
+        'Suspend users:',
+        rows.map((r) => r.id)
+      );
+    },
+  },
+];
+
 export default function UsersPage() {
   const { role } = useAuth();
-  const { t } = useTranslation('users');
   const { t: tNav } = useTranslation('navigation');
-  const tenantQueryKeys = useTenantQueryKeys();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
   const columns = useUserColumns();
 
-  const usersQuery = useQuery({
-    queryKey: tenantQueryKeys.custom(['users']),
-    queryFn: async () => mockUsers,
+  const tableInstance = useServerTable<UserMock>({
+    queryKey: ['users'],
+    queryFn: getUsersTable,
+    columns,
+    defaultPageSize: 10,
+    savedViewKey: 'users',
+    filename: 'users-export.csv',
   });
 
   if (!config) return <Navigate to="/login" replace />;
@@ -57,20 +72,12 @@ export default function UsersPage() {
   return (
     <AppShell title={config.title} pageTitle={tNav('users')} navigation={config.navigation}>
       <Stack gap="md">
-        {usersQuery.isError && (
-          <ErrorState
-            title={t('errors.loadFailed')}
-            message={(usersQuery.error as { message?: string })?.message ?? 'Unknown error'}
+        <Card p="lg">
+          <ServerTable
+            instance={tableInstance}
+            bulkActions={bulkActions}
+            emptyMessage="No users found. Try adjusting your search or filters."
           />
-        )}
-        <Card
-          p="lg"
-          style={{
-            border: '1px solid var(--mantine-color-default-border)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-          }}
-        >
-          <DataTable columns={columns} data={usersQuery.data} isLoading={usersQuery.isLoading} />
         </Card>
       </Stack>
     </AppShell>

@@ -23,9 +23,14 @@ export const isSessionExpired = (): boolean => {
   return Date.now() >= expiresAt;
 };
 
+export const getEmail = () => localStorage.getItem('userEmail');
+export const setEmail = (email: string) => localStorage.setItem('userEmail', email);
+export const clearEmail = () => localStorage.removeItem('userEmail');
+
 export const clearSession = () => {
   clearToken();
   clearRefreshToken();
   clearRole();
   clearExpiresAt();
+  clearEmail();
 };
