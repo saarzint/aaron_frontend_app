@@ -14,7 +14,9 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "back": "Retour",
-    "viewAll": "Tout voir"
+    "viewAll": "Tout voir",
+    "deleteSelected": "Supprimer la sélection",
+    "suspendSelected": "Suspendre la sélection"
   },
   "status": {
     "active": "Actif",
@@ -25,7 +27,9 @@
     "cancelled": "Annulé",
     "failed": "Échoué",
     "enabled": "Activé",
-    "disabled": "Désactivé"
+    "disabled": "Désactivé",
+    "invited": "Invité",
+    "suspended": "Suspendu"
   },
   "labels": {
     "loading": "Chargement…",
@@ -45,7 +49,8 @@
     "genericDescription": "Une erreur inattendue s'est produite. Veuillez réessayer.",
     "networkError": "Erreur réseau",
     "notFound": "Introuvable",
-    "unauthorized": "Non autorisé"
+    "unauthorized": "Non autorisé",
+    "saveFailed": "L'enregistrement a échoué. Veuillez réessayer."
   },
   "theme": {
     "darkMode": "Mode sombre",
@@ -55,5 +60,18 @@
     "label": "Langue",
     "en": "English",
     "fr": "Français"
+  },
+  "unsavedChanges": {
+    "prompt": "Vous avez des modifications non enregistrées. Les abandonner ?"
+  },
+  "tenant": {
+    "switched": "Espace de travail changé",
+    "nowViewing": "Affichage de {{name}}",
+    "switchFailed": "Le changement d'espace de travail a échoué. Veuillez réessayer."
+  },
+  "emptyStates": {
+    "noOrders": "Aucune commande trouvée. Essayez d'ajuster votre recherche ou vos filtres.",
+    "noCustomers": "Aucun client trouvé. Essayez d'ajuster votre recherche ou vos filtres.",
+    "noUsers": "Aucun utilisateur trouvé. Essayez d'ajuster votre recherche ou vos filtres."
   }
 }

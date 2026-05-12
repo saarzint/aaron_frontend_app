@@ -44,6 +44,7 @@ const ADMIN_ROLES = ['org_admin', 'super_admin'];
 
 export default function UserFormModal({ opened, onClose, user }: UserFormModalProps) {
   const { t } = useTranslation('users');
+  const { t: tCommon } = useTranslation('common');
   const queryClient = useQueryClient();
   const { invalidateTenantQueries } = useTenantQueryClient();
 
@@ -81,7 +82,7 @@ export default function UserFormModal({ opened, onClose, user }: UserFormModalPr
 
   const handleClose = () => {
     if (isDirty) {
-      const confirmLeave = window.confirm('You have unsaved changes. Discard them?');
+      const confirmLeave = window.confirm(tCommon('unsavedChanges.prompt'));
       if (!confirmLeave) return;
     }
 
@@ -101,7 +102,6 @@ export default function UserFormModal({ opened, onClose, user }: UserFormModalPr
     });
     await invalidateTenantQueries(['users']);
     toast.success({ message: user ? t('form.updated') : t('form.created') });
-    console.info('User saved:', data);
     reset(defaultValues);
     onClose();
   };

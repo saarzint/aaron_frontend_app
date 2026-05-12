@@ -2,7 +2,9 @@ import { useEffect, useMemo } from 'react';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { Navigate } from 'react-router-dom';
-import { Divider, Group, Select, Stack, Switch, Text } from '@mantine/core';
+import { Divider, Group, Stack, Text } from '@mantine/core';
+import Select from '@platform-ui/primitives/Select';
+import Switch from '@platform-ui/primitives/Switch';
 import { useAuth } from '@core/auth/useAuth';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 import { mockSettingRows } from '@mocks/data';
@@ -28,6 +30,7 @@ export default function SettingsPage() {
   const { role } = useAuth();
   const { t } = useTranslation('settings');
   const { t: tNav } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
   const { i18n } = useTranslation();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
 
@@ -86,7 +89,7 @@ export default function SettingsPage() {
       )
         return;
 
-      const confirmLeave = window.confirm('You have unsaved changes. Discard them?');
+      const confirmLeave = window.confirm(tCommon('unsavedChanges.prompt'));
       if (!confirmLeave) {
         event.preventDefault();
       }
@@ -94,7 +97,7 @@ export default function SettingsPage() {
 
     document.addEventListener('click', onDocumentClick, true);
     return () => document.removeEventListener('click', onDocumentClick, true);
-  }, [isDirty]);
+  }, [isDirty, tCommon]);
 
   const onProfileSubmit = async (data: ProfileForm) => {
     await new Promise<void>((r) => setTimeout(r, 500));

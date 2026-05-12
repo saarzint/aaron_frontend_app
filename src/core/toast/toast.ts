@@ -13,7 +13,7 @@ export const toast = {
     notifications.show({
       title: options.title,
       message: options.message,
-      color: 'teal',
+      color: 'success',
       icon: createElement(IconCheck, { size: 16 }),
       autoClose: options.autoClose ?? 4000,
     });
@@ -21,9 +21,9 @@ export const toast = {
 
   error(options: ToastOptions) {
     notifications.show({
-      title: options.title ?? 'Error',
+      title: options.title,
       message: options.message,
-      color: 'red',
+      color: 'danger',
       icon: createElement(IconX, { size: 16 }),
       autoClose: options.autoClose ?? 6000,
     });
@@ -33,7 +33,7 @@ export const toast = {
     notifications.show({
       title: options.title,
       message: options.message,
-      color: 'orange',
+      color: 'warning',
       icon: createElement(IconAlertTriangle, { size: 16 }),
       autoClose: options.autoClose ?? 5000,
     });
@@ -43,7 +43,7 @@ export const toast = {
     notifications.show({
       title: options.title,
       message: options.message,
-      color: 'blue',
+      color: 'brand',
       icon: createElement(IconInfoCircle, { size: 16 }),
       autoClose: options.autoClose ?? 4000,
     });

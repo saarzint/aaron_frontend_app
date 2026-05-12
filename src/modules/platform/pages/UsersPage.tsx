@@ -17,8 +17,17 @@ import { useAuth } from '@core/auth/useAuth';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 import UserFormModal from '../components/UserFormModal';
 
+type StatusVariant = 'success' | 'warning' | 'danger' | 'neutral';
+
+const USER_STATUS_VARIANT: Record<string, StatusVariant> = {
+  active: 'success',
+  invited: 'warning',
+  suspended: 'danger',
+};
+
 function useUserColumns(): ColumnDef<UserMock, unknown>[] {
   const { t } = useTranslation('users');
+  const { t: tCommon } = useTranslation('common');
 
   return useMemo(
     () => [
@@ -31,46 +40,48 @@ function useUserColumns(): ColumnDef<UserMock, unknown>[] {
         header: t('columns.status'),
         cell: ({ getValue }) => {
           const status = String(getValue());
-          const variant =
-            status === 'active' ? 'success' : status === 'invited' ? 'warning' : 'danger';
-          return <Badge variant={variant}>{status}</Badge>;
+          const variant = USER_STATUS_VARIANT[status] ?? 'neutral';
+          const label = tCommon(`status.${status}`, status);
+          return <Badge variant={variant}>{label}</Badge>;
         },
       },
       { accessorKey: 'lastActive', header: t('columns.lastActive') },
     ],
-    [t]
+    [t, tCommon]
   );
 }
-
-// bulkActions moved inside component so hooks (queryClient) are available
 
 export default function UsersPage() {
   const { role } = useAuth();
   const { t } = useTranslation('users');
   const { t: tNav } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
   const columns = useUserColumns();
   const [modalOpen, setModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const { invalidateTenantQueries } = useTenantQueryClient();
 
-  const bulkActions: BulkAction<UserMock>[] = [
-    {
-      label: 'Suspend selected',
-      variant: 'danger',
-      icon: <IconUserOff size={14} />,
-      onClick: async (rows) => {
-        await Promise.all(
-          rows.map((row) => apiClient.put(`/users/${row.id}`, { ...row, status: 'suspended' }))
-        );
+  const bulkActions: BulkAction<UserMock>[] = useMemo(
+    () => [
+      {
+        label: tCommon('actions.suspendSelected'),
+        variant: 'danger',
+        icon: <IconUserOff size={14} />,
+        onClick: async (rows) => {
+          await Promise.all(
+            rows.map((row) => apiClient.put(`/users/${row.id}`, { ...row, status: 'suspended' }))
+          );
 
-        await queryClient.invalidateQueries({
-          predicate: (query) => Array.isArray(query.queryKey) && query.queryKey.includes('users'),
-        });
-        await invalidateTenantQueries(['users']);
+          await queryClient.invalidateQueries({
+            predicate: (query) => Array.isArray(query.queryKey) && query.queryKey.includes('users'),
+          });
+          await invalidateTenantQueries(['users']);
+        },
       },
-    },
-  ];
+    ],
+    [tCommon, queryClient, invalidateTenantQueries]
+  );
 
   const tableInstance = useServerTable<UserMock>({
     queryKey: ['users'],
@@ -96,7 +107,7 @@ export default function UsersPage() {
           <ServerTable
             instance={tableInstance}
             bulkActions={bulkActions}
-            emptyMessage="No users found. Try adjusting your search or filters."
+            emptyMessage={tCommon('emptyStates.noUsers')}
           />
         </Card>
       </Stack>

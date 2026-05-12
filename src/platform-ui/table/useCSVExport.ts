@@ -32,7 +32,8 @@ export function exportTableToCSV<T>(
   );
 
   const csv = [headers.map(escape).join(','), ...dataRows.map((r) => r.join(','))].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  // UTF-8 BOM so Excel renders unicode characters correctly
+  const blob = new Blob(['﻿', csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

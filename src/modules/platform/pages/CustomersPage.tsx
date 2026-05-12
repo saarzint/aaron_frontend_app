@@ -17,8 +17,17 @@ import { useAuth } from '@core/auth/useAuth';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 import CustomerFormModal from '../components/CustomerFormModal';
 
+type StatusVariant = 'success' | 'warning' | 'neutral';
+
+const CUSTOMER_STATUS_VARIANT: Record<string, StatusVariant> = {
+  active: 'success',
+  pending: 'warning',
+  inactive: 'neutral',
+};
+
 function useCustomerColumns(): ColumnDef<CustomerMock, unknown>[] {
   const { t } = useTranslation('customers');
+  const { t: tCommon } = useTranslation('common');
 
   return useMemo(
     () => [
@@ -31,13 +40,13 @@ function useCustomerColumns(): ColumnDef<CustomerMock, unknown>[] {
         header: t('columns.status'),
         cell: ({ getValue }) => {
           const status = String(getValue());
-          const variant =
-            status === 'active' ? 'success' : status === 'pending' ? 'warning' : 'neutral';
-          return <Badge variant={variant}>{status}</Badge>;
+          const variant = CUSTOMER_STATUS_VARIANT[status] ?? 'neutral';
+          const label = tCommon(`status.${status}`, status);
+          return <Badge variant={variant}>{label}</Badge>;
         },
       },
     ],
-    [t]
+    [t, tCommon]
   );
 }
 
@@ -45,27 +54,31 @@ export default function CustomersPage() {
   const { role } = useAuth();
   const { t } = useTranslation('customers');
   const { t: tNav } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
   const queryClient = useQueryClient();
   const { invalidateTenantQueries } = useTenantQueryClient();
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
   const columns = useCustomerColumns();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const bulkActions: BulkAction<CustomerMock>[] = [
-    {
-      label: 'Delete selected',
-      variant: 'danger',
-      icon: <IconTrash size={14} />,
-      onClick: async (rows) => {
-        await Promise.all(rows.map((row) => apiClient.delete(`/customers/${row.id}`)));
-        await queryClient.invalidateQueries({
-          predicate: (query) =>
-            Array.isArray(query.queryKey) && query.queryKey.includes('customers'),
-        });
-        await invalidateTenantQueries(['customers']);
+  const bulkActions: BulkAction<CustomerMock>[] = useMemo(
+    () => [
+      {
+        label: tCommon('actions.deleteSelected'),
+        variant: 'danger',
+        icon: <IconTrash size={14} />,
+        onClick: async (rows) => {
+          await Promise.all(rows.map((row) => apiClient.delete(`/customers/${row.id}`)));
+          await queryClient.invalidateQueries({
+            predicate: (query) =>
+              Array.isArray(query.queryKey) && query.queryKey.includes('customers'),
+          });
+          await invalidateTenantQueries(['customers']);
+        },
       },
-    },
-  ];
+    ],
+    [tCommon, queryClient, invalidateTenantQueries]
+  );
 
   const tableInstance = useServerTable<CustomerMock>({
     queryKey: ['customers'],
@@ -91,7 +104,7 @@ export default function CustomersPage() {
           <ServerTable
             instance={tableInstance}
             bulkActions={bulkActions}
-            emptyMessage="No customers found. Try adjusting your search or filters."
+            emptyMessage={tCommon('emptyStates.noCustomers')}
           />
         </Card>
       </Stack>

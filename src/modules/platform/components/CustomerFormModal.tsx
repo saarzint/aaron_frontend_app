@@ -62,6 +62,7 @@ async function searchCompanies(query: string): Promise<string[]> {
 
 export default function CustomerFormModal({ opened, onClose, customer }: CustomerFormModalProps) {
   const { t } = useTranslation('customers');
+  const { t: tCommon } = useTranslation('common');
   const queryClient = useQueryClient();
   const { invalidateTenantQueries } = useTenantQueryClient();
 
@@ -101,7 +102,7 @@ export default function CustomerFormModal({ opened, onClose, customer }: Custome
 
   const handleClose = () => {
     if (isDirty) {
-      const confirmLeave = window.confirm('You have unsaved changes. Discard them?');
+      const confirmLeave = window.confirm(tCommon('unsavedChanges.prompt'));
       if (!confirmLeave) return;
     }
 
@@ -121,7 +122,6 @@ export default function CustomerFormModal({ opened, onClose, customer }: Custome
     });
     await invalidateTenantQueries(['customers']);
     toast.success({ message: customer ? t('form.updated') : t('form.created') });
-    console.info('Customer saved:', data);
     reset(defaultValues);
     onClose();
   };

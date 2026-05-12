@@ -2,18 +2,6 @@ import { z } from 'zod';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const emailSchema = z
-  .string()
-  .min(1, 'Email is required')
-  .refine((val) => emailRegex.test(val), 'Invalid email address');
-
-export const passwordSchema = z.string().min(8, 'Password must be at least 8 characters');
-
-export const urlSchema = z
-  .string()
-  .refine((val) => !val || /^https?:\/\/.+/.test(val), 'Invalid URL')
-  .optional();
-
 export function requiredString(message = 'This field is required') {
   return z.string().min(1, message);
 }
@@ -26,4 +14,15 @@ export function emailField(
     .string()
     .min(1, requiredMsg)
     .refine((val) => emailRegex.test(val), invalidMsg);
+}
+
+export function passwordField(message = 'Password must be at least 8 characters', minLength = 8) {
+  return z.string().min(minLength, message);
+}
+
+export function urlField(message = 'Invalid URL') {
+  return z
+    .string()
+    .refine((val) => !val || /^https?:\/\/.+/.test(val), message)
+    .optional();
 }
