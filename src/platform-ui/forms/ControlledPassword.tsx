@@ -1,8 +1,8 @@
-import { PasswordInput } from '@mantine/core';
 import { Controller } from 'react-hook-form';
 import type { PasswordInputProps } from '@mantine/core';
 import type { Control, FieldValues, Path } from 'react-hook-form';
 import FormField from '@platform-ui/primitives/FormField';
+import Password from '@platform-ui/primitives/Password';
 
 interface ControlledPasswordProps<TFieldValues extends FieldValues> extends Omit<
   PasswordInputProps,
@@ -36,13 +36,7 @@ export function ControlledPassword<TFieldValues extends FieldValues>({
           required={required}
           disabled={disabled}
         >
-          <PasswordInput
-            {...field}
-            value={field.value ?? ''}
-            disabled={disabled}
-            radius="md"
-            {...inputProps}
-          />
+          <Password {...field} value={field.value ?? ''} disabled={disabled} {...inputProps} />
         </FormField>
       )}
     />

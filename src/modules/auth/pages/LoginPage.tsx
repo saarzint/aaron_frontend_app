@@ -56,7 +56,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     try {
       const { role } = await loginUser(data);
-      toast.success({ message: 'Welcome back!' });
+      toast.success({ message: t('login.welcomeBack') });
       navigate(ROLE_ROUTES[role] ?? '/dashboard');
     } catch (err) {
       const message = (err as { message?: string })?.message ?? t('login.errors.loginFailed');
@@ -84,7 +84,7 @@ export default function LoginPage() {
             required
           />
           {errors.root && (
-            <Alert color="red" variant="light">
+            <Alert color="danger" variant="light">
               {errors.root.message}
             </Alert>
           )}

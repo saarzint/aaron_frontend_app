@@ -13,8 +13,18 @@ import { useAuth } from '@core/auth/useAuth';
 import { useFormatters } from '@core/formatting/useFormatters';
 import { ROLE_CONFIG, isAppRole } from '../config/moduleRegistry';
 
+type StatusVariant = 'success' | 'warning' | 'primary' | 'danger' | 'neutral';
+
+const ORDER_STATUS_VARIANT: Record<string, StatusVariant> = {
+  completed: 'success',
+  pending: 'warning',
+  processing: 'primary',
+  cancelled: 'danger',
+};
+
 function useOrderColumns(): ColumnDef<Order, unknown>[] {
   const { t } = useTranslation('orders');
+  const { t: tCommon } = useTranslation('common');
   const fmt = useFormatters();
 
   return useMemo(
@@ -26,15 +36,9 @@ function useOrderColumns(): ColumnDef<Order, unknown>[] {
         header: t('columns.status'),
         cell: ({ getValue }) => {
           const status = String(getValue());
-          const variant =
-            status === 'completed'
-              ? 'success'
-              : status === 'pending'
-                ? 'warning'
-                : status === 'processing'
-                  ? 'primary'
-                  : 'danger';
-          return <Badge variant={variant}>{status}</Badge>;
+          const variant = ORDER_STATUS_VARIANT[status] ?? 'neutral';
+          const label = tCommon(`status.${status}`, status);
+          return <Badge variant={variant}>{label}</Badge>;
         },
       },
       {
@@ -44,30 +48,34 @@ function useOrderColumns(): ColumnDef<Order, unknown>[] {
       },
       { accessorKey: 'createdAt', header: t('columns.date') },
     ],
-    [t, fmt]
+    [t, tCommon, fmt]
   );
 }
-
-const bulkActions: BulkAction<Order>[] = [
-  {
-    label: 'Delete selected',
-    variant: 'danger',
-    icon: <IconTrash size={14} />,
-    onClick: (rows) => {
-      // Placeholder: wire to real delete mutation
-      console.warn(
-        'Delete orders:',
-        rows.map((r) => r.id)
-      );
-    },
-  },
-];
 
 export default function OrdersPage() {
   const { role } = useAuth();
   const { t: tNav } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
   const config = useMemo(() => (isAppRole(role) ? ROLE_CONFIG[role] : null), [role]);
   const columns = useOrderColumns();
+
+  const bulkActions: BulkAction<Order>[] = useMemo(
+    () => [
+      {
+        label: tCommon('actions.deleteSelected'),
+        variant: 'danger',
+        icon: <IconTrash size={14} />,
+        onClick: (rows) => {
+          // Placeholder: wire to real delete mutation
+          console.warn(
+            'Delete orders:',
+            rows.map((r) => r.id)
+          );
+        },
+      },
+    ],
+    [tCommon]
+  );
 
   const tableInstance = useServerTable<Order>({
     queryKey: ['orders'],
@@ -87,7 +95,7 @@ export default function OrdersPage() {
           <ServerTable
             instance={tableInstance}
             bulkActions={bulkActions}
-            emptyMessage="No orders found. Try adjusting your search or filters."
+            emptyMessage={tCommon('emptyStates.noOrders')}
           />
         </Card>
       </Stack>

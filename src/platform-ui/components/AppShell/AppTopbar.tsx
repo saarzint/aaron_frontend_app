@@ -34,6 +34,7 @@ export default function AppTopbar({
   const { invalidateAllTenantQueries, clearTenantCache } = useTenantQueryClient();
   const { t } = useTranslation('navigation');
   const { t: tCommon } = useTranslation('common');
+  const { t: tAuth } = useTranslation('auth');
   const [isLoadingSwitch, setIsLoadingSwitch] = useState(false);
 
   const tenantOptions = useMemo(
@@ -48,19 +49,20 @@ export default function AppTopbar({
       clearTenantCache();
       await switchTenant(value);
       await invalidateAllTenantQueries();
+      const tenantName = TENANTS[value as keyof typeof TENANTS]?.name ?? value;
       toast.success({
-        title: 'Workspace switched',
-        message: `Now viewing ${TENANTS[value as keyof typeof TENANTS]?.name ?? value}`,
+        title: tCommon('tenant.switched'),
+        message: tCommon('tenant.nowViewing', { name: tenantName }),
       });
     } catch {
-      toast.error({ message: 'Failed to switch workspace. Please try again.' });
+      toast.error({ message: tCommon('tenant.switchFailed') });
     } finally {
       setIsLoadingSwitch(false);
     }
   };
 
   const handleLogout = () => {
-    toast.info({ message: tCommon('auth.logout.success', 'You have been signed out') });
+    toast.info({ message: tAuth('logout.success') });
     onLogout();
   };
 

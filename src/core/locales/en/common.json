@@ -14,7 +14,9 @@
     "close": "Close",
     "confirm": "Confirm",
     "back": "Back",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "deleteSelected": "Delete selected",
+    "suspendSelected": "Suspend selected"
   },
   "status": {
     "active": "Active",
@@ -25,7 +27,9 @@
     "cancelled": "Cancelled",
     "failed": "Failed",
     "enabled": "Enabled",
-    "disabled": "Disabled"
+    "disabled": "Disabled",
+    "invited": "Invited",
+    "suspended": "Suspended"
   },
   "labels": {
     "loading": "Loading…",
@@ -45,7 +49,8 @@
     "genericDescription": "An unexpected error occurred. Please try again.",
     "networkError": "Network error",
     "notFound": "Not found",
-    "unauthorized": "Unauthorized"
+    "unauthorized": "Unauthorized",
+    "saveFailed": "Save failed. Please try again."
   },
   "theme": {
     "darkMode": "Dark mode",
@@ -55,5 +60,18 @@
     "label": "Language",
     "en": "English",
     "fr": "Français"
+  },
+  "unsavedChanges": {
+    "prompt": "You have unsaved changes. Discard them?"
+  },
+  "tenant": {
+    "switched": "Workspace switched",
+    "nowViewing": "Now viewing {{name}}",
+    "switchFailed": "Failed to switch workspace. Please try again."
+  },
+  "emptyStates": {
+    "noOrders": "No orders found. Try adjusting your search or filters.",
+    "noCustomers": "No customers found. Try adjusting your search or filters.",
+    "noUsers": "No users found. Try adjusting your search or filters."
   }
 }
